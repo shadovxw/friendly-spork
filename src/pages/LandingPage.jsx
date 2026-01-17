@@ -11,6 +11,7 @@ import MagneticButton from '../components/MagneticButton';
 import heroImage from '../assets/hero.jpg'; 
 import VelocityWrapper from '../components/VelocityWrapper'; 
 import VelocityMarquee from '../components/VelocityMarquee';
+import SystemStatus from '../components/SystemStatus';
 
 const LandingPage = () => {
   const { enableIntro } = useOutletContext(); 
@@ -111,6 +112,8 @@ const LandingPage = () => {
              <Footer />
           </div>
       </div>
+
+      <SystemStatus />
 
     </div>
   );

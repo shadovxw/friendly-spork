@@ -1,6 +1,9 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Lenis from 'lenis';
+import { inject } from '@vercel/analytics';
+ 
+inject(); // This starts tracking page views automatically
 
 // Components
 import Layout from './components/Layout'; 
