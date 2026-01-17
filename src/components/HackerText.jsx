@@ -1,51 +1,30 @@
 import React, { useState, useEffect } from 'react';
 
-const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*";
+const HackerText = ({ label, trigger = false }) => {
+  const [displayText, setDisplayText] = useState(label);
+  const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&";
 
-const HackerText = ({ label, className }) => {
-  const [text, setText] = useState(label);
-  const [isHovering, setIsHovering] = useState(false);
-  
-  useEffect(() => {
-    // If not hovering, reset text immediately to clean label
-    if (!isHovering) {
-        setText(label);
-        return;
-    }
-
-    let iteration = 0;
+  const scramble = () => {
+    let iterations = 0;
     const interval = setInterval(() => {
-      setText(prev => 
-        label
-          .split("")
-          .map((letter, index) => {
-            if (index < iteration) {
-              return label[index];
-            }
-            return letters[Math.floor(Math.random() * letters.length)];
-          })
-          .join("")
+      setDisplayText(prev => 
+        prev.split("").map((char, index) => {
+          if (index < iterations) return label[index];
+          return charset[Math.floor(Math.random() * charset.length)];
+        }).join("")
       );
 
-      if (iteration >= label.length) {
-        clearInterval(interval);
-      }
-      
-      iteration += 1 / 3; // Speed of decoding (Lower = Slower)
+      if (iterations >= label.length) clearInterval(interval);
+      iterations += 1 / 3;
     }, 30);
+  };
 
-    return () => clearInterval(interval);
-  }, [isHovering, label]);
+  // Scramble on hover (if mouse events are used) or when manual trigger is fired
+  useEffect(() => {
+    if (trigger) scramble();
+  }, [trigger]);
 
-  return (
-    <span 
-        onMouseEnter={() => setIsHovering(true)}
-        onMouseLeave={() => setIsHovering(false)}
-        className={className}
-    >
-      {text}
-    </span>
-  );
+  return <span className="font-mono">{displayText}</span>;
 };
 
 export default HackerText;

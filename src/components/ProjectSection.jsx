@@ -2,33 +2,76 @@ import React from 'react';
 import HoloCard from './HoloCard'; // <--- Import
 import { useSystem } from '../hooks/useSystem';
 
+// const projects = [
+//   {
+//     title: "INFRABOT",
+//     category: "DevOps Automation",
+//     desc: "An Ansible-driven autonomous bot for server infrastructure management.",
+//     tech: ["Python", "Ansible", "Docker"],
+//     link: "#"
+//   },
+//   {
+//     title: "NEURAL_DASH",
+//     category: "Data Visualization",
+//     desc: "A futuristic dashboard using React Grid Layout for real-time neural network monitoring.",
+//     tech: ["React.js", "D3.js", "Tailwind"],
+//     link: "#"
+//   },
+//   {
+//     title: "ECHO_CHAMBER",
+//     category: "Audio Processing",
+//     desc: "Web-based audio synthesizer generating ambient soundscapes from user input.",
+//     tech: ["Web Audio API", "Three.js", "Canvas"],
+//     link: "#"
+//   },
+//   {
+//     title: "VOID_GALLERY",
+//     category: "Photography Portfolio",
+//     desc: "A WebGL accelerated image gallery with distortion effects and kinetic typography.",
+//     tech: ["WebGL", "GLSL", "GSAP"],
+//     link: "#"
+//   }
+// ];
+
 const projects = [
   {
-    title: "INFRABOT",
-    category: "DevOps Automation",
-    desc: "An Ansible-driven autonomous bot for server infrastructure management.",
-    tech: ["Python", "Ansible", "Docker"],
+    title: "AUTONOMOUS_DRONE",
+    category: "Robotics & Embedded Systems",
+    desc: "A Pixhawk-based quadrotor drone designed, assembled, and flight-tested from scratch with stable manual flight, real-time telemetry, and ongoing vision-based autonomy work using a companion computer.",
+    tech: [
+      "Pixhawk Cube Orange",
+      "ArduPilot",
+      "Raspberry Pi",
+      "Python",
+      "Embedded Systems"
+    ],
     link: "#"
   },
   {
-    title: "NEURAL_DASH",
-    category: "Data Visualization",
-    desc: "A futuristic dashboard using React Grid Layout for real-time neural network monitoring.",
-    tech: ["React.js", "D3.js", "Tailwind"],
-    link: "#"
+    title: "WAVE_DRIVE",
+    category: "Computer Vision & IoT",
+    desc: "A gesture-controlled robotic car powered by a microservices architecture, enabling real-time hand gesture recognition and low-latency command execution over WebSockets.",
+    tech: [
+      "React.js",
+      "Node.js",
+      "Flask",
+      "MediaPipe",
+      "OpenCV",
+      "Raspberry Pi"
+    ],
+    link: "https://github.com/shadovxw/wavedrive/tree/version3"
   },
   {
-    title: "ECHO_CHAMBER",
-    category: "Audio Processing",
-    desc: "Web-based audio synthesizer generating ambient soundscapes from user input.",
-    tech: ["Web Audio API", "Three.js", "Canvas"],
-    link: "#"
-  },
-  {
-    title: "VOID_GALLERY",
-    category: "Photography Portfolio",
-    desc: "A WebGL accelerated image gallery with distortion effects and kinetic typography.",
-    tech: ["WebGL", "GLSL", "GSAP"],
+    title: "BLABLAVERSE",
+    category: "Full-Stack Web Application",
+    desc: "A real-time chat application built using the MERN stack, supporting secure authentication, instant messaging, and scalable backend APIs for seamless multi-user communication.",
+    tech: [
+      "MongoDB",
+      "Express.js",
+      "React.js",
+      "Node.js",
+      "Socket.IO"
+    ],
     link: "#"
   }
 ];

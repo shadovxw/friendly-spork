@@ -5,34 +5,38 @@ const timelineData = [
   {
     id: 1,
     year: "2025",
-    title: "Senior Developer",
-    company: "Tech Corp",
-    description: "Leading frontend architecture and 3D web implementations.",
+    title: "Backend & DevOps Engineering Intern",
+    company: "Citius Cloud Services LLP",
+    description:
+      "Worked on enterprise-grade backend systems, Kubernetes & OpenShift deployments, CI/CD pipelines, centralized logging with ELK Stack, and secure secret management using HashiCorp Vault.",
     type: "work"
   },
   {
     id: 2,
     year: "2023",
-    title: "Full Stack Engineer",
-    company: "Creative Studio",
-    description: "Built scalable microservices and interactive campaigns.",
+    title: "Drone Crafters / Co-Captain",
+    company: "Drone Crafters – KJ Somaiya College of Engineering",
+    description:
+      "Designed, assembled, and flight-tested a Pixhawk-based quadrotor drone. Integrated ArduPilot, Herelink telemetry, and Raspberry Pi companion computer while leading technical execution and team coordination.",
     type: "work"
   },
   {
     id: 3,
-    year: "2021",
-    title: "Masters in CS",
-    company: "University of Tech",
-    description: "Specialized in Artificial Intelligence and Computer Graphics.",
+    year: "2022",
+    title: "B.Tech in Electronics & Computer Engineering",
+    company: "KJ Somaiya College of Engineering",
+    description:
+      "Honors in Artificial Intelligence, Computer Vision, and Robotics. CGPA: 9.35. Strong focus on embedded systems, robotics, and full-stack backend development.",
     type: "education"
   },
   {
     id: 4,
-    year: "2019",
-    title: "Freelance Developer",
-    company: "Self Employed",
-    description: "Delivered 20+ web projects for international clients.",
-    type: "work"
+    year: "2020",
+    title: "Secondary & Higher Secondary Education",
+    company: "CBSE & HSC Boards",
+    description:
+      "Completed CBSE (10th) and HSC (12th) education",
+    type: "education"
   }
 ];
 

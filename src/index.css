@@ -238,3 +238,52 @@ html {
   /* Apply animation */
   animation: noiseAnimation 0.2s infinite;
 }
+
+
+@keyframes glitch-skew {
+  0% { transform: skew(0deg); }
+  20% { transform: skew(-5deg); filter: hue-rotate(90deg); }
+  40% { transform: skew(5deg); }
+  60% { transform: skew(-2deg); filter: blur(1px); }
+  100% { transform: skew(0deg); }
+}
+
+.animate-glitch {
+  animation: glitch-skew 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+/* CRT Scanline Animation */
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+.crt-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 50%,
+    rgba(18, 16, 16, 0.1) 50%
+  );
+  background-size: 100% 4px;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.crt-scanline {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(6, 182, 212, 0.05) 50%,
+    transparent
+  );
+  opacity: 0.1;
+  height: 100px;
+  width: 100%;
+  animation: scanline 8s linear infinite;
+  pointer-events: none;
+  z-index: 11;
+}
