@@ -1,35 +1,130 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import heroImage from '../assets/hero.jpg'; 
+import heroImage from '../assets/profile.jpg'; 
+import resumeFile from '../assets/resume.pdf';
 import { useSystem } from '../hooks/useSystem';
 import HackerText from './HackerText';
+import { Mail, Linkedin, Github, FileText, X } from 'lucide-react';
 
-// --- CONTACT MODAL (High Z-Index) ---
+// --- CONTACT MODAL (Larger Container + Full Portrait) ---
 const ContactModal = ({ isOpen, onClose }) => {
   const { playClick, playHover } = useSystem();
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[300] flex items-center justify-center px-4">
+    <div className="fixed inset-0 z-[300] flex items-center justify-center px-4 py-7">
+      {/* Backdrop */}
       <div className="absolute inset-0 bg-black/90 backdrop-blur-md" onClick={onClose} />
-      <div className="relative w-full max-w-md bg-neutral-900 border border-white/10 rounded-2xl p-8 shadow-2xl overflow-hidden">
-        <button onClick={() => { onClose(); playClick(); }} className="absolute top-4 right-4 text-gray-500 hover:text-white z-20">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      
+      {/* Main Card Container - INCREASED SIZE (max-w-md) */}
+      <div className="relative w-full max-w-md bg-neutral-900 border border-white/10 p-1 shadow-2xl animate-in fade-in zoom-in duration-300">
+        
+        {/* Close Button */}
+        <button 
+            onClick={() => { onClose(); playClick(); }} 
+            className="absolute -top-8 right-0 text-white/50 hover:text-white transition-colors flex items-center gap-2 text-xs uppercase font-mono tracking-widest"
+        >
+            [CLOSE] <X size={14} />
         </button>
-        <div className="relative z-10 flex flex-col items-center text-center">
-            <div className="relative w-32 h-32 mb-6">
-                <div className="absolute inset-0 rounded-full border-2 border-dashed border-cyan-500/50 animate-[spin_10s_linear_infinite]" />
-                <img src={heroImage} alt="Profile" className="w-full h-full object-cover rounded-full border-4 border-white/10" />
+
+        {/* 1. THE PHOTO SECTION - INCREASED HEIGHT (aspect-[3/4]) */}
+        <div className="relative w-full aspect-[3/4] bg-black overflow-hidden mb-1 group">
+            {/* The Cut Edge Mask */}
+            <div 
+              className="absolute inset-0 w-full h-full bg-neutral-800" 
+              style={{ clipPath: 'polygon(10% 0, 100% 0, 100% 85%, 85% 100%, 0 100%, 0 10%)' }}
+            >
+                <img 
+                    src={heroImage} 
+                    alt="Profile" 
+                    // Reverted to standard centering (object-center) inside a larger frame
+                    className="w-full h-full object-cover object-center grayscale group-hover:grayscale-0 transition-all duration-700 scale-105 group-hover:scale-110" 
+                />
+                
+                {/* Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+                
+                {/* Text Overlay */}
+                <div className="absolute bottom-6 left-8 z-10">
+                    <h2 className="text-5xl font-black text-white uppercase leading-none tracking-tighter mb-2">
+                        Vrishank<br />Warrier
+                    </h2>
+                    <div className="flex items-center gap-3">
+                        <div className="h-[2px] w-12 bg-cyan-500" />
+                        <p className="text-cyan-400 text-xs font-bold tracking-[0.3em] uppercase">
+                            ENGINERRING STUDENT
+                        </p>
+                    </div>
+                </div>
             </div>
-            <h2 className="text-2xl font-black text-white uppercase mb-1">Vrishank Warrier</h2>
-            <p className="text-cyan-400 text-[10px] font-bold tracking-[0.3em] uppercase mb-6">Digital Alchemist</p>
-            <button onClick={() => playClick()} className="w-full py-3 bg-white text-black font-bold uppercase text-xs rounded">Download Resume</button>
+
+            {/* Corner Accents */}
+            <div className="absolute top-0 right-0 w-16 h-16 border-t-2 border-r-2 border-cyan-500/30 pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-16 h-16 border-b-2 border-l-2 border-cyan-500/30 pointer-events-none" />
         </div>
+
+        {/* 2. CONTENT BELOW */}
+        <div className="bg-neutral-900 border-t border-white/5 p-6 space-y-5">
+            
+            {/* Status Line */}
+            <div className="flex justify-between items-center text-[11px] font-mono text-gray-500 mb-2 uppercase tracking-wider">
+                <span></span>
+                <span className="flex items-center gap-2 text-green-500">
+                    <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" /> 
+                    System Online
+                </span>
+            </div>
+
+            {/* Action Grid */}
+            <div className="grid grid-cols-2 gap-3">
+                <a 
+                  href="https://github.com/shadovxw" 
+                  target="_blank" 
+                  rel="noreferrer" 
+                  onClick={playClick} 
+                  className="flex items-center justify-center gap-2 py-4 border border-white/10 hover:bg-white hover:text-black hover:border-white text-gray-400 transition-all text-xs font-bold uppercase tracking-wider"
+                >
+                    <Github size={16} /> GitHub
+                </a>
+                
+                <a 
+                  href="https://www.linkedin.com/in/vrishank-warrier-ab529628a/"
+                  target="_blank" 
+                  rel="noreferrer" 
+                  onClick={playClick} 
+                  className="flex items-center justify-center gap-2 py-4 border border-white/10 hover:bg-[#0077b5] hover:text-white hover:border-[#0077b5] text-gray-400 transition-all text-xs font-bold uppercase tracking-wider"
+                >
+                    <Linkedin size={16} /> LinkedIn
+                </a>
+                
+                <a 
+                  href="mailto:vrishank.w02@email.com" 
+                  onClick={playClick} 
+                  className="col-span-2 flex items-center justify-center gap-2 py-4 border border-white/10 hover:bg-cyan-500 hover:text-black hover:border-cyan-500 text-gray-400 transition-all text-xs font-bold uppercase tracking-wider"
+                >
+                    <Mail size={16} /> Send Transmission
+                </a>
+            </div>
+
+            {/* Resume Button */}
+            {/* Resume Button - Changed from <button> to <a> for download */}
+            <a 
+                href={resumeFile}             // The imported file
+                download="Vrishank_Warrier_Resume.pdf" // The name the file will have when downloaded
+                onClick={playClick} 
+                className="w-full group relative py-5 bg-white text-black font-black uppercase text-sm tracking-[0.2em] overflow-hidden block text-center cursor-pointer"
+            >
+                <div className="absolute inset-0 bg-cyan-400 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
+                <span className="relative z-10 flex items-center justify-center gap-2">
+                    <FileText size={16} /> Download Resume
+                </span>
+            </a>
+        </div>
+
       </div>
     </div>
   );
 };
-
 // --- MAIN NAV ---
 const TopNav = ({ show = true }) => {
   const [activeSection, setActiveSection] = useState('');

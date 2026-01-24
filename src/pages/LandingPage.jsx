@@ -12,11 +12,31 @@ import heroImage from '../assets/hero.jpg';
 import VelocityWrapper from '../components/VelocityWrapper'; 
 import VelocityMarquee from '../components/VelocityMarquee';
 import SystemStatus from '../components/SystemStatus';
+import FlickeringHeadline from '../components/FlickeringHeadline';
 
 const LandingPage = () => {
   const { enableIntro } = useOutletContext(); 
   const [showLandingContent, setShowLandingContent] = useState(!enableIntro);
   const [introFinished, setIntroFinished] = useState(!enableIntro);
+
+  const HERO_PHRASES = [
+  "still deciding what to put here.",
+  "this was supposed to be profound.",
+  "measured cha—",
+  "no, not that.",
+  "something meaningful, maybe.",
+  "work in progress.",
+  "thinking… give it a second.",
+  "draft zero.",
+  "placeholder, but intentional.",
+  "unfinished on purpose.",
+  "words loading.",
+  "this will make sense later.",
+  "still forming a thought.",
+  "not settled yet.",
+];
+
+
 
   useEffect(() => {
     if (enableIntro) {
@@ -63,25 +83,34 @@ const LandingPage = () => {
             <main className="max-w-4xl mb-10 md:mb-0">
                 <div className="overflow-hidden">
                     <p className={`text-sm md:text-base text-gray-400 mb-4 tracking-[0.2em] uppercase transition-transform duration-1000 delay-500 ${showLandingContent ? 'translate-y-0' : 'translate-y-full'}`}>
-                        Full Stack Developer & Artist
+                        Software Engineer · Systems & Infrastructure
                     </p>
+                    <p className={`text-xs md:text-sm text-gray-500 mb-6 max-w-xl transition-opacity duration-1000 delay-700 ${showLandingContent ? 'opacity-100' : 'opacity-0'}`}>
+                        Early-career engineer focused on fundamentals, real systems, and long-term mastery.
+                    </p>
+
                 </div>
                 
-                <h2 className={`text-6xl md:text-9xl font-black leading-[0.9] mb-8 transition-all duration-1000 delay-300 transform ${showLandingContent ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'}`}>
-                    <span className="block glitch-text" data-text="DIGITAL">
-                        <HyperText text="DIGITAL" />
-                    </span>
-                    <span className="block text-transparent bg-clip-text bg-gradient-to-r from-gray-100 to-gray-500">
-                        CHAOS.
-                    </span>
-                </h2>
-                
-                <div className={`transition-all duration-1000 delay-1000 ${showLandingContent ? 'opacity-100' : 'opacity-0'}`}>
+                <div className="relative h-[2.5rem] md:h-[3rem] lg:h-[3.5rem] mb-3">
+  <h2 className="absolute inset-0 text-lg md:text-xl lg:text-2xl font-medium leading-relaxed">
+    <FlickeringHeadline
+      phrases={HERO_PHRASES}
+      className="block glitch-text"
+    />
+  </h2>
+</div>
+
+
+                <p className="text-xs md:text-sm text-gray-300 max-w-md">
+                While it decides, feel free to explore the portfolio.
+                </p>
+
+                {/* <div className={`transition-all duration-1000 delay-1000 ${showLandingContent ? 'opacity-100' : 'opacity-0'}`}>
                     <MagneticButton href="#projects" className="group relative inline-block px-8 py-3 bg-white text-black font-bold uppercase tracking-widest text-xs overflow-hidden rounded-md">
                        <div className="absolute inset-0 w-full h-full bg-neutral-800 transform translate-y-full transition-transform duration-300 group-hover:translate-y-0"></div>
                        <span className="relative z-10 group-hover:text-white transition-colors duration-300">View Projects</span>
                     </MagneticButton>
-                </div>
+                </div> */}
             </main>
           </div>
       </section>

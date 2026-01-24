@@ -8,52 +8,55 @@ import TextReveal from './TextReveal';
 
 // Section meta
 const SECTION_ID = "about";
-const BG_TEXT = "DEVELOPER ARTIST CREATOR";
+const BG_TEXT = "DEVELOPER ENGINEER ARCHITECT"; 
 
 // Headings
-const PERSONNEL_LABEL = "The Personnel";
-const MAIN_HEADING_LINE_1 = "Behind the";
-const MAIN_HEADING_LINE_2 = "Pixel.";
+const PERSONNEL_LABEL = "The Profile";
+const MAIN_HEADING_LINE_1 = "Limitless";
+const MAIN_HEADING_LINE_2 = "Ambition.";
 
 // Philosophy
 const PHILOSOPHY_TEXT =
-  "I believe code is modern-day alchemy. We take raw logic and transform it into living, breathing experiences. My work exists at the intersection of precision engineering and digital chaos.";
+  "I am early in my engineering journey, driven by a deep curiosity about how systems work—from hardware foundations to large-scale cloud platforms. My learning is shaped by both formal education and constant hands-on building. I focus on understanding fundamentals, applying them in real projects, and steadily expanding my depth across the stack. This space represents the beginning of that journey, not the destination.";
 
 // Cards
 const CARD_ONE = {
   index: "01",
-  title: "The Origin.",
+  title: "The Profession.",
   description:
-    "I don't just write code; I construct logic. My background in computer science is fused with a passion for abstract expressionism."
+    "I am currently gaining real-world experience through an intensive internship, where I contribute to deployment pipelines and assist in implementing Generative AI solutions. My focus is on learning how production systems are designed, deployed, and maintained—bridging academic concepts with practical engineering realities."
 };
+
 
 const CARD_TWO = {
   index: "02",
-  title: "The Arsenal."
+  title: "The Pursuit.",
+  description: 
+    "I don’t claim mastery. I focus on fundamentals, repetition, and progression. These are the technologies I have worked with, continue to practice, and intend to deepen over time. Each represents an area where I am building confidence step by step, with long-term mastery as the goal."
 };
 
 const CARD_THREE = {
   index: "03",
-  title: "The Chaos.",
+  title: "The Lab.",
   description:
-    "\"Perfect is boring.\" I embrace digital artifacts, glitches, and organized chaos. My goal is to create web experiences that feel alive."
+    "Most of my learning happens through self-driven experimentation. I spend time building personal projects, managing a home server, and exploring new technologies outside structured requirements. These projects are where concepts turn into intuition, and where mistakes become understanding. My long-term aim is to grow into a well-rounded engineer with depth across Gen-AI, DevOps, and core systems."
 };
 
+
 // Skills
-// Skills (as per resume)
 const SKILLS = [
-  "React.js",
+  "Software Dev",
+  "Gen-AI Integration", // Changed from "Basics" to "Integration" (Sound more active)
+  "K8s / OCP",
+  "AWS / Azure",
+  "Ansible",
   "Node.js",
-  "Express.js",
-  "Flask",
   "Python",
+  "React.js",
   "Docker",
-  "Kubernetes",
-  "PostgreSQL",
-  "MongoDB",
-  "Raspberry Pi",
-  "OpenCV",
-  "MediaPipe"
+  "Linux Admin",
+  "Comp. Vision",
+  "Robotics"
 ];
 
 
@@ -143,7 +146,7 @@ const AboutSection = () => {
             </div>
           </div>
 
-          {/* CARD 1 */}
+          {/* CARD 1: THE PROFESSION */}
           <div className="shrink-0 w-[85vw] md:w-[600px] h-[500px] md:h-[600px] bg-black border border-neutral-800 p-8 md:p-12 flex flex-col justify-between group hover:border-cyan-500/50 transition-colors duration-500">
             <div>
               <BlurReveal><div className="text-8xl font-black text-neutral-800 mb-6">{CARD_ONE.index}</div></BlurReveal>
@@ -153,17 +156,24 @@ const AboutSection = () => {
             <div className="w-full h-1 bg-neutral-800 relative overflow-hidden"><div className="absolute inset-0 bg-cyan-500 w-1/3" /></div>
           </div>
 
-          {/* CARD 2 */}
+          {/* CARD 2: THE PURSUIT (SKILLS) */}
           <div className="shrink-0 w-[85vw] md:w-[600px] h-[500px] md:h-[600px] bg-black border border-neutral-800 p-8 md:p-12 flex flex-col justify-between group hover:border-purple-500/50 transition-colors duration-500">
             <div>
               <BlurReveal><div className="text-8xl font-black text-neutral-800 mb-6">{CARD_TWO.index}</div></BlurReveal>
-              <BlurReveal delay={0.1}><h4 className="text-3xl font-bold text-white mb-6">{CARD_TWO.title}</h4></BlurReveal>
+              <BlurReveal delay={0.1}><h4 className="text-3xl font-bold text-white mb-4">{CARD_TWO.title}</h4></BlurReveal>
+              
+              <BlurReveal delay={0.15}>
+                <p className="text-gray-400 text-sm mb-8 leading-relaxed border-l-2 border-purple-500 pl-4">
+                  {CARD_TWO.description}
+                </p>
+              </BlurReveal>
+
               <BlurReveal delay={0.2}>
                 <div className="grid grid-cols-2 gap-4">
                   {SKILLS.map((skill, i) => (
-                    <div key={i} className="flex items-center gap-2 text-gray-400 group-hover:text-white transition-colors">
+                    <div key={i} className="flex items-center gap-2 text-gray-500 group-hover:text-white transition-colors">
                       <span className="w-1.5 h-1.5 bg-purple-500 rounded-full" />
-                      <span className="uppercase tracking-wider text-sm">{skill}</span>
+                      <span className="uppercase tracking-wider text-xs md:text-sm">{skill}</span>
                     </div>
                   ))}
                 </div>
@@ -172,7 +182,7 @@ const AboutSection = () => {
             <div className="w-full h-1 bg-neutral-800 relative overflow-hidden"><div className="absolute inset-0 bg-purple-500 w-2/3" /></div>
           </div>
 
-          {/* CARD 3 */}
+          {/* CARD 3: THE LAB (PROJECTS) */}
           <div className="shrink-0 w-[85vw] md:w-[600px] h-[500px] md:h-[600px] bg-black border border-neutral-800 p-8 md:p-12 flex flex-col justify-between group hover:border-white/50 transition-colors duration-500">
             <div>
               <BlurReveal><div className="text-8xl font-black text-neutral-800 mb-6">{CARD_THREE.index}</div></BlurReveal>

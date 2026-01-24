@@ -14,12 +14,25 @@ const Footer = () => {
 
   const currentYear = new Date().getFullYear();
 
-  // Command Logic
+  // Updated Contact Details
+  const contactInfo = {
+    email: "vrishank.w02@gmail.com",
+    linkedin: "https://www.linkedin.com/in/vrishank-warrier-ab529628a/",
+    github: "https://github.com/shadovxw" // Preserved from your previous project data
+  };
+
+  const socialLinks = [
+    { name: 'GitHub', url: contactInfo.github },
+    { name: 'LinkedIn', url: contactInfo.linkedin },
+    // { name: 'Twitter', url: '#' }
+  ];
+
+  // Command Logic with Updated Info
   const commands = {
     help: "AVAILABLE: PROJECTS, RESUME, STATUS, CLEAR, CONTACT",
     projects: "REDIRECTING TO ARCHIVES... (SCROLLING UP)",
     status: "ALL SYSTEMS OPERATIONAL // LOC: MUMBAI, IN",
-    contact: "EMAIL: vrishank@example.com // LINKEDIN: @vrishankwarrier",
+    contact: `EMAIL: ${contactInfo.email} // LINKEDIN: @vrishank-warrier`,
     resume: "FETCHING RESUME.PDF... [DOWNLOAD_READY]",
   };
 
@@ -62,7 +75,8 @@ const Footer = () => {
             Transmission End // Initialize Connection
         </p>
 
-        <h2 className="text-6xl md:text-9xl font-black tracking-tighter mb-12 mix-blend-difference">
+        {/* FIXED: text-4xl for mobile, sm:text-6xl for tablet, md:text-9xl for desktop */}
+        <h2 className="text-4xl sm:text-6xl md:text-9xl font-black tracking-tighter mb-12 mix-blend-difference">
             LET'S <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-cyan-400 to-gray-500 transition-all duration-700">
                 COLLABORATE
@@ -71,22 +85,24 @@ const Footer = () => {
 
         <div className="flex flex-col md:flex-row gap-8 items-center justify-center">
             <MagneticButton 
-                href="mailto:vrishank@example.com"
+                href={`mailto:${contactInfo.email}`}
                 className="px-10 py-4 bg-white text-black font-black uppercase tracking-widest text-xs rounded-full hover:bg-cyan-400 transition-all duration-300"
             >
                 Start a Project
             </MagneticButton>
 
             <div className="flex gap-8">
-                {['GitHub', 'LinkedIn', 'Twitter'].map((social) => (
+                {socialLinks.map((social) => (
                     <a 
-                        key={social} 
-                        href="#" 
+                        key={social.name} 
+                        href={social.url}
+                        target={social.url !== '#' ? "_blank" : "_self"}
+                        rel="noopener noreferrer"
                         onClick={() => playClick()}
                         onMouseEnter={() => playHover()}
                         className="text-gray-500 hover:text-white uppercase text-[10px] font-bold tracking-[0.2em] border-b border-transparent hover:border-cyan-500 transition-all pb-1"
                     >
-                        {social}
+                        {social.name}
                     </a>
                 ))}
             </div>

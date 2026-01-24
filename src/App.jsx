@@ -17,6 +17,7 @@ import CyberGrid from './components/CyberGrid';
 import ScrollProgress from './components/ScrollProgress';
 import SystemMonitor from './components/SystemMonitor';
 import NotFoundPage from './pages/NotFoundPage';
+import ConstructionPage from './pages/ConstructionPage';
 
 const App = () => {
   const { matrixMode } = useSystem(); 
@@ -65,6 +66,7 @@ const App = () => {
                 <Route element={<Layout />}>
                     <Route path="/" element={<LandingPage />} />
                     <Route path="*" element={<NotFoundPage />} />
+                    <Route path="/projects" element={<ConstructionPage />} />
                 </Route>
             </Routes>
         </Router>
