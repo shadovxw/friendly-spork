@@ -37,7 +37,7 @@ const App = () => {
   }, []);
 
   return (
-    <div className="min-h-screen transition-all duration-1000 ease-in-out">
+    <div className="min-h-screen transition-all duration-1000 ease-in-out cursor-auto lg:cursor-none">
         
         {/* 1. MATRIX RAIN (Only shows when triggered) */}
         {matrixMode && <MatrixRain />}

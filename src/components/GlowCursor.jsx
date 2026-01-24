@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion'; // Assuming you can use framer, or we use plain CSS
+// import { motion } from 'framer-motion'; 
 
 const GlowCursor = () => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -33,7 +33,8 @@ const GlowCursor = () => {
 
   return (
     <div
-      className="fixed top-0 left-0 pointer-events-none z-[9999] mix-blend-difference"
+      // UPDATED LINE BELOW: Added 'hidden lg:block'
+      className="fixed top-0 left-0 pointer-events-none z-[9999] mix-blend-difference hidden lg:block"
       style={{
         transform: `translate(${position.x}px, ${position.y}px)`,
       }}
