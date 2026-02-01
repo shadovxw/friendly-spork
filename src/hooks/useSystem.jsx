@@ -1,10 +1,12 @@
-import { useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import useSound from 'use-sound';
+
+const SystemContext = createContext();
 
 const hoverSfx = '/sounds/hover.mp3'; 
 const clickSfx = '/sounds/click.mp3';
 
-export const useSystem = () => {
+export const SystemProvider = ({ children }) => {
   const [matrixMode, setMatrixMode] = useState(false);
   
   // Audio Setup
@@ -18,7 +20,7 @@ export const useSystem = () => {
       // Add key to buffer and keep last 6 chars
       buffer = (buffer + e.key).slice(-6).toLowerCase();
       
-      console.log("Typing Buffer:", buffer); // <--- OPEN CONSOLE (F12) TO SEE THIS
+      // console.log("Typing Buffer:", buffer); 
 
       if (buffer === "matrix") {
           console.log("MATRIX MODE ACTIVATED");
@@ -32,5 +34,17 @@ export const useSystem = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  return { matrixMode, playHover, playClick };
+  return (
+    <SystemContext.Provider value={{ matrixMode, setMatrixMode, playHover, playClick }}>
+      {children}
+    </SystemContext.Provider>
+  );
+};
+
+export const useSystem = () => {
+    const context = useContext(SystemContext);
+    if (!context) {
+        throw new Error('useSystem must be used within a SystemProvider');
+    }
+    return context;
 };

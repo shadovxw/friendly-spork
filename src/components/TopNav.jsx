@@ -169,6 +169,7 @@ const TopNav = ({ show = true }) => {
     setIsMenuOpen(false);
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
   };
+  
 
   return (
     <>
@@ -222,7 +223,7 @@ const TopNav = ({ show = true }) => {
                 </a>
               );
             })}
-            <button onClick={() => { setIsContactOpen(true); setIsMenuOpen(false); }} className="mt-10 px-12 py-5 bg-white text-black font-black uppercase text-sm rounded-full">Contact</button>
+            <button id="nav-contact-link" onClick={() => { setIsContactOpen(true); setIsMenuOpen(false); }} className="mt-10 px-12 py-5 bg-white text-black font-black uppercase text-sm rounded-full">Contact</button>
           </div>
         </div>
       </nav>

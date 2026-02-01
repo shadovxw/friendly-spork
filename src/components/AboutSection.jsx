@@ -1,5 +1,6 @@
 import BlurReveal from './BlurReveal';
 import TextReveal from './TextReveal';
+import PulsingCore from './PulsingCore';
 import React, { useRef, useEffect, useState } from 'react';
 
 const PERSONNEL_LABEL = "The Profile";
@@ -8,12 +9,12 @@ const MAIN_HEADING_LINE_2 = "Ambition.";
 const PHILOSOPHY_TEXT =
   "I am early in my engineering journey, driven by a deep curiosity about how systems work—from hardware foundations to large-scale cloud platforms. My learning is shaped by both formal education and constant hands-on building. I focus on understanding fundamentals, applying them in real projects, and steadily expanding my depth across the stack.";
 
-const BG_TEXT = "DEVELOPER ENGINEER ARCHITECT"; 
+const BG_TEXT = "DEVELOPER ENGINEER ARCHITECT";
 
 // === HEADER SECTION ===
 const ProfileHeaderSection = () => {
   return (
-    <section className="relative w-full h-[60vh] min-h-[500px] bg-neutral-900 flex items-center">
+    <section className="relative w-full h-[60vh] min-h-[500px] bg-neutral-900 flex items-center overflow-visible">
       <div className="absolute top-1/2 -translate-y-1/2 left-0 w-full opacity-10 pointer-events-none select-none z-0">
         <BlurReveal delay={0.2}>
           <span className="text-[12rem] md:text-[20rem] font-black leading-none text-white whitespace-nowrap">
@@ -23,22 +24,30 @@ const ProfileHeaderSection = () => {
       </div>
 
       <div className="w-full z-10 px-6 md:px-20">
-        <div className="max-w-4xl w-full">
-          <div className="mb-6 md:mb-8 border-l-2 border-cyan-500 pl-4 md:pl-8">
-            <BlurReveal>
-              <h2 className="text-[10px] md:text-sm font-bold tracking-[0.5em] text-cyan-400 uppercase mb-1 md:mb-2">
-                {PERSONNEL_LABEL}
-              </h2>
-            </BlurReveal>
-            <BlurReveal delay={0.2}>
-              <h3 className="text-3xl md:text-6xl font-black text-white uppercase leading-none md:leading-tight">
-                {MAIN_HEADING_LINE_1} <br /> {MAIN_HEADING_LINE_2}
-              </h3>
-            </BlurReveal>
+        <div className="max-w-7xl w-full flex flex-col md:flex-row items-center justify-between gap-8">
+          {/* Left Side - Text Content */}
+          <div className="max-w-4xl w-full">
+            <div className="mb-6 md:mb-8 border-l-2 border-cyan-500 pl-4 md:pl-8">
+              <BlurReveal>
+                <h2 className="text-[10px] md:text-sm font-bold tracking-[0.5em] text-cyan-400 uppercase mb-1 md:mb-2">
+                  {PERSONNEL_LABEL}
+                </h2>
+              </BlurReveal>
+              <BlurReveal delay={0.2}>
+                <h3 className="text-3xl md:text-6xl font-black text-white uppercase leading-none md:leading-tight">
+                  {MAIN_HEADING_LINE_1} <br /> {MAIN_HEADING_LINE_2}
+                </h3>
+              </BlurReveal>
+            </div>
+
+            <div className="text-sm md:text-2xl font-bold leading-relaxed text-gray-500 w-full">
+              <TextReveal text={PHILOSOPHY_TEXT} />
+            </div>
           </div>
 
-          <div className="text-sm md:text-2xl font-bold leading-relaxed text-gray-500 w-full">
-            <TextReveal text={PHILOSOPHY_TEXT} />
+          {/* Right Side - PulsingCore */}
+          <div className="flex-shrink-0 hidden md:block absolute right-20 top-1/2 -translate-y-1/2 w-[500px] h-[500px] lg:w-[650px] lg:h-[650px] xl:w-[800px] xl:h-[800px] 2xl:w-[900px] 2xl:h-[900px] z-20 overflow-visible">
+            <PulsingCore />
           </div>
         </div>
       </div>
@@ -69,19 +78,19 @@ const CARD_THREE = {
 };
 
 
-const SKILLS = [ "Software Dev", "Gen-AI", "K8s / OCP", "AWS / Azure", "Ansible", "Node.js", "Python", "React.js", "Docker", "Linux", "CV", "Robotics" ];
+const SKILLS = ["Software Dev", "Gen-AI", "K8s / OCP", "AWS / Azure", "Ansible", "Node.js", "Python", "React.js", "Docker", "Linux", "CV", "Robotics"];
 
 // === SCROLLING SECTION ===
 const HorizontalCardsSection = () => {
   const sectionRef = useRef(null);
   const cardsContainerRef = useRef(null);
-  
-  const [containerStyle, setContainerStyle] = useState({ 
-    position: 'absolute', 
-    top: 0, 
-    left: 0 
+
+  const [containerStyle, setContainerStyle] = useState({
+    position: 'absolute',
+    top: 0,
+    left: 0
   });
-  
+
   const [translateX, setTranslateX] = useState(0);
 
   useEffect(() => {
@@ -122,8 +131,8 @@ const HorizontalCardsSection = () => {
 
       const scrolledDistance = Math.abs(Math.min(sectionRect.top, 0));
       const maxVerticalScroll = sectionHeight - viewportHeight;
-      const progress = maxVerticalScroll > 0 
-        ? Math.min(Math.max(scrolledDistance / maxVerticalScroll, 0), 1) 
+      const progress = maxVerticalScroll > 0
+        ? Math.min(Math.max(scrolledDistance / maxVerticalScroll, 0), 1)
         : 0;
 
       setTranslateX(-(progress * maxHorizontalScroll));
@@ -136,7 +145,7 @@ const HorizontalCardsSection = () => {
 
   return (
     <section ref={sectionRef} className="relative w-full h-[400vh] bg-neutral-900 overflow-visible">
-      
+
       <div style={containerStyle} className="overflow-hidden flex items-center z-10">
         <div className="absolute top-32 left-0 w-full opacity-10 pointer-events-none select-none z-0">
           <BlurReveal delay={0.2}>
@@ -171,7 +180,7 @@ const HorizontalCardsSection = () => {
             <div>
               <BlurReveal><div className="text-4xl md:text-8xl font-black text-neutral-800 mb-2 md:mb-8">{CARD_TWO.index}</div></BlurReveal>
               <BlurReveal delay={0.1}><h4 className="text-lg md:text-4xl font-bold text-white mb-2 md:mb-6">{CARD_TWO.title}</h4></BlurReveal>
-              
+
               {/* RESTORED DESCRIPTION */}
               <BlurReveal delay={0.2}>
                 <p className="text-gray-400 leading-relaxed text-xs md:text-xl line-clamp-4 md:line-clamp-none mb-4 md:mb-6">
