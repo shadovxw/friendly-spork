@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { useSystem } from '../hooks/useSystem'; // <--- Import Hook
+import { useSystem } from '../../hooks/useSystem'; // <--- Import Hook
 
 const MagneticButton = ({ children, className, onClick, href }) => {
   const ref = useRef(null);

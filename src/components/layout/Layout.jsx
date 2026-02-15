@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
-import TerminalPreloader from './TerminalPreloader';
+import TerminalPreloader from '../system/TerminalPreloader';
 
 const Layout = () => {
   const location = useLocation();
   const isHomePage = location.pathname === '/';
-  
+
   // 1. If it's the Home Page, we start with the Terminal showing.
   // 2. If it's NOT Home, we start with Terminal hidden.
   const [showTerminal, setShowTerminal] = useState(isHomePage);
-  
+
   // Reset state when route changes (optional, but good for full reloads)
   useEffect(() => {
     if (isHomePage) {

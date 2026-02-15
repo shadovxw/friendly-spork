@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useSystem } from '../hooks/useSystem'; // Import sound hook
+import { useSystem } from '../../hooks/useSystem'; // Import sound hook
 
 const ScrollProgress = () => {
   const [progress, setProgress] = useState(0);

@@ -7,7 +7,7 @@ const HackerText = ({ label, trigger = false }) => {
   const scramble = () => {
     let iterations = 0;
     const interval = setInterval(() => {
-      setDisplayText(prev => 
+      setDisplayText(prev =>
         prev.split("").map((char, index) => {
           if (index < iterations) return label[index];
           return charset[Math.floor(Math.random() * charset.length)];

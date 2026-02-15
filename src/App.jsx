@@ -6,17 +6,17 @@ import { inject } from '@vercel/analytics';
 inject(); // This starts tracking page views automatically
 
 // Components
-import Layout from './components/Layout';
+import Layout from './components/layout/Layout';
 import LandingPage from './pages/LandingPage';
-import CommandPalette from './components/CommandPalette';
-import MatrixRain from './components/MatrixRain';
+import CommandPalette from './components/ui/CommandPalette';
+import MatrixRain from './components/effects/MatrixRain';
 
 // Hook
 import { useSystem } from './hooks/useSystem';
-import CyberGrid from './components/CyberGrid';
-import ScrollProgress from './components/ScrollProgress';
-import SystemMonitor from './components/SystemMonitor';
-import GlowCursor from './components/GlowCursor';
+import CyberGrid from './components/effects/CyberGrid';
+import ScrollProgress from './components/effects/ScrollProgress';
+import SystemMonitor from './components/system/SystemMonitor';
+import GlowCursor from './components/system/GlowCursor';
 import NotFoundPage from './pages/NotFoundPage';
 import ConstructionPage from './pages/ConstructionPage';
 

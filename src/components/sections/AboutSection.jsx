@@ -1,6 +1,6 @@
-import BlurReveal from './BlurReveal';
-import TextReveal from './TextReveal';
-import PulsingCore from './PulsingCore';
+import BlurReveal from '../effects/BlurReveal';
+import TextReveal from '../effects/TextReveal';
+import PulsingCore from '../effects/PulsingCore';
 import React, { useRef, useEffect, useState } from 'react';
 
 const PERSONNEL_LABEL = "The Profile";
@@ -78,7 +78,21 @@ const CARD_THREE = {
 };
 
 
-const SKILLS = ["Software Dev", "Gen-AI", "K8s / OCP", "AWS / Azure", "Ansible", "Node.js", "Python", "React.js", "Docker", "Linux", "CV", "Robotics"];
+// const SKILLS = ["Software Dev", "Gen-AI", "K8s / OCP", "AWS / Azure", "Ansible", "Node.js", "Python", "React.js", "Docker", "Linux", "CV", "Robotics"];
+const SKILLS = [
+  "Problem Solving",
+  "Building Applications",
+  "Working with Servers",
+  "Cloud Concepts",
+  "Networking",
+  "Automation",
+  "AI Concepts",
+  "Computer Vision",
+  "Robotics",
+  "Linux",
+  "Debugging",
+  "System Thinking"
+];
 
 // === SCROLLING SECTION ===
 const HorizontalCardsSection = () => {
@@ -191,7 +205,7 @@ const HorizontalCardsSection = () => {
               {/* SKILLS GRID */}
               <BlurReveal delay={0.3}>
                 <div className="grid grid-cols-2 gap-2 md:gap-x-6 md:gap-y-4">
-                  {SKILLS.map((skill, i) => (
+                  {SKILLS?.map((skill, i) => (
                     <div key={i} className="flex items-center gap-2 text-gray-500 group-hover:text-white transition-colors">
                       <span className="w-1.5 h-1.5 bg-purple-500 rounded-full" />
                       <span className="uppercase tracking-wider text-[9px] md:text-base">{skill}</span>

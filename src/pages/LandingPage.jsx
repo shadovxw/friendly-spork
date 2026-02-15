@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import TopNav from '../components/TopNav';
-import ProjectSection from '../components/ProjectSection';
-import ExperienceSection from '../components/ExperienceSection';
-import AboutSection from '../components/AboutSection';
-import Footer from '../components/Footer';
-import HyperText from '../components/HyperText';
+import TopNav from '../components/layout/TopNav';
+import ProjectSection from '../components/sections/ProjectSection';
+import ExperienceSection from '../components/sections/ExperienceSection';
+import AboutSection from '../components/sections/AboutSection';
+import Footer from '../components/layout/Footer';
+import HyperText from '../components/effects/HyperText';
 import heroImage from '../assets/hero.jpg';
-import VelocityWrapper from '../components/VelocityWrapper';
-import VelocityMarquee from '../components/VelocityMarquee';
-import FlickeringHeadline from '../components/FlickeringHeadline';
+import VelocityWrapper from '../components/layout/VelocityWrapper';
+import VelocityMarquee from '../components/effects/VelocityMarquee';
+import FlickeringHeadline from '../components/effects/FlickeringHeadline';
+import StackPage from '../components/sections/StackPage';
 
 const LandingPage = () => {
   const { enableIntro } = useOutletContext();
@@ -123,6 +124,10 @@ const LandingPage = () => {
       <VelocityWrapper className={`transition-opacity duration-1000 delay-1000 ${showLandingContent ? 'opacity-100' : 'opacity-0'}`}>
         <div id="projects">
           <ProjectSection />
+        </div>
+
+        <div id="stack">
+          <StackPage />
         </div>
 
         <div id="experience">

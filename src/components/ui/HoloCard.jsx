@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { useSystem } from '../hooks/useSystem';
+import { useSystem } from '../../hooks/useSystem';
 
 const HoloCard = ({ children, className = "" }) => {
   const cardRef = useRef(null);
