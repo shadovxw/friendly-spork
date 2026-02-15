@@ -98,7 +98,7 @@ const ContactModal = ({ isOpen, onClose }) => {
             </a>
 
             <a
-              href="mailto:vrishank.w02@email.com"
+              href="mailto:vrishank.w02@gmail.com"
               onClick={playClick}
               className="col-span-2 flex items-center justify-center gap-2 py-4 border border-white/10 hover:bg-cyan-500 hover:text-black hover:border-cyan-500 text-gray-400 transition-all text-xs font-bold uppercase tracking-wider"
             >
