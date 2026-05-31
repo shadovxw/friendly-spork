@@ -15,7 +15,7 @@ const STACK_DATA = [
     glow: "shadow-white/10",
     skills: ["React.js", "Next.js", "Tailwind CSS", "Spline", "Blender"]
   },
-    {
+  {
     category: "Infrastructure",
     color: "text-cyan-500",
     glow: "shadow-cyan-500/20",
@@ -39,6 +39,7 @@ const TiltCard = ({ group }) => {
   const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-15deg", "15deg"]);
 
   const handleMouseMove = (e) => {
+    if (!ref.current) return;
     const rect = ref.current.getBoundingClientRect();
     const width = rect.width;
     const height = rect.height;
@@ -105,7 +106,7 @@ const StackPage = () => {
       </motion.div>
 
       {/* 3D Grid Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12 perspective-1000">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12 [perspective:1000px]">
         {STACK_DATA.map((group, idx) => (
           <motion.div
             key={idx}

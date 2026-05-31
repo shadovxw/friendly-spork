@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Lenis from 'lenis';
 import { inject } from '@vercel/analytics';
@@ -17,8 +17,10 @@ import CyberGrid from './components/effects/CyberGrid';
 import ScrollProgress from './components/effects/ScrollProgress';
 import SystemMonitor from './components/system/SystemMonitor';
 import GlowCursor from './components/system/GlowCursor';
-import NotFoundPage from './pages/NotFoundPage';
-import ConstructionPage from './pages/ConstructionPage';
+
+// Secondary routes — split out of the initial bundle.
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
+const ConstructionPage = lazy(() => import('./pages/ConstructionPage'));
 
 const App = () => {
   const { matrixMode } = useSystem();
@@ -64,13 +66,15 @@ const App = () => {
       <Router>
         <CommandPalette />
 
-        <Routes>
-          <Route element={<Layout />}>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="*" element={<NotFoundPage />} />
-            <Route path="/projects" element={<ConstructionPage />} />
-          </Route>
-        </Routes>
+        <Suspense fallback={null}>
+          <Routes>
+            <Route element={<Layout />}>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="*" element={<NotFoundPage />} />
+              <Route path="/projects" element={<ConstructionPage />} />
+            </Route>
+          </Routes>
+        </Suspense>
       </Router>
 
     </div>

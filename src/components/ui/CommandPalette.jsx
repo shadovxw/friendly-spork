@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import resumeFile from '../../assets/resume.pdf';
 
 const CommandPalette = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -8,38 +9,38 @@ const CommandPalette = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Scroll to a section, navigating home first if we're on another route.
+  const goToSection = (id) => {
+    if (location.pathname !== '/') {
+      navigate('/');
+      setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }), 500);
+    } else {
+      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const downloadResume = () => {
+    const a = document.createElement('a');
+    a.href = resumeFile;
+    a.download = 'Vrishank_Warrier_Resume.pdf';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  };
+
   // Define the available commands
   const commands = [
     { id: 'home', label: 'Go Home', icon: '🏠', action: () => navigate('/') },
-    {
-      id: 'projects',
-      label: 'View Projects',
-      icon: '⚡',
-      action: () => {
-        if (location.pathname !== '/') {
-          navigate('/');
-          setTimeout(() => document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' }), 500);
-        } else {
-          document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
-        }
-      }
-    },
-    {
-      id: 'about',
-      label: 'Read Philosophy',
-      icon: '🧠',
-      action: () => {
-        if (location.pathname !== '/') {
-          navigate('/');
-          setTimeout(() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' }), 500);
-        } else {
-          document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' });
-        }
-      }
-    },
-    { id: 'contact', label: 'Send Signal', icon: '📡', action: () => document.querySelector('button[class*="Contact"]').click() },
-    { id: 'github', label: 'Open GitHub', icon: '🐙', action: () => window.open('https://github.com', '_blank') },
-    { id: 'linkedin', label: 'Connect on LinkedIn', icon: '💼', action: () => window.open('https://linkedin.com', '_blank') },
+    { id: 'projects', label: 'View Projects', icon: '⚡', action: () => goToSection('projects') },
+    { id: 'stack', label: 'View Stack', icon: '🧱', action: () => goToSection('stack') },
+    { id: 'experience', label: 'View Experience', icon: '📈', action: () => goToSection('experience') },
+    { id: 'about', label: 'Read Philosophy', icon: '🧠', action: () => goToSection('about') },
+    // Fixed: open the contact modal via a custom event (the old class selector matched nothing and threw).
+    { id: 'contact', label: 'Send Signal', icon: '📡', action: () => window.dispatchEvent(new CustomEvent('open-contact')) },
+    { id: 'resume', label: 'Download Resume', icon: '📄', action: downloadResume },
+    // Fixed: point at the actual profiles instead of the generic homepages.
+    { id: 'github', label: 'Open GitHub', icon: '🐙', action: () => window.open('https://github.com/shadovxw', '_blank', 'noopener') },
+    { id: 'linkedin', label: 'Connect on LinkedIn', icon: '💼', action: () => window.open('https://www.linkedin.com/in/vrishank-warrier-ab529628a/', '_blank', 'noopener') },
   ];
 
   // Filter commands based on search
@@ -80,7 +81,19 @@ const CommandPalette = () => {
     return () => window.removeEventListener('keydown', handleNav);
   }, [isOpen, filteredCommands, selectedIndex]);
 
-  if (!isOpen) return null;
+  // When closed, show a subtle ⌘K hint badge (desktop only) so visitors know the palette exists.
+  if (!isOpen) {
+    return (
+      <button
+        onClick={() => { setQuery(""); setSelectedIndex(0); setIsOpen(true); }}
+        aria-label="Open command palette"
+        className="hidden md:flex fixed bottom-6 left-6 z-[100] items-center gap-2 px-3 py-2 bg-black/60 backdrop-blur-md border border-white/10 rounded-lg text-[10px] font-mono uppercase tracking-widest text-gray-400 hover:text-white hover:border-cyan-500/50 transition-colors"
+      >
+        <kbd className="text-cyan-400 font-bold">⌘K</kbd>
+        <span>Menu</span>
+      </button>
+    );
+  }
 
   return (
     <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[20vh] px-4">

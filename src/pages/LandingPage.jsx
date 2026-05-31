@@ -18,20 +18,16 @@ const LandingPage = () => {
   const [introFinished, setIntroFinished] = useState(!enableIntro);
 
   const HERO_PHRASES = [
-    "still deciding what to put here.",
-    "this was supposed to be profound.",
-    "measured cha—",
-    "no, not that.",
-    "something meaningful, maybe.",
-    "work in progress.",
-    "thinking… give it a second.",
-    "draft zero.",
-    "placeholder, but intentional.",
-    "unfinished on purpose.",
-    "words loading.",
-    "this will make sense later.",
-    "still forming a thought.",
-    "not settled yet.",
+    "I build systems that hold up.",
+    "backend, cloud, and the glue between.",
+    "infrastructure that stays out of your way.",
+    "from bare metal to deployment.",
+    "fundamentals first, always.",
+    "Docker, Kubernetes, Linux, Go.",
+    "automating the boring parts.",
+    "learning fast, shipping faster.",
+    "obsessed with how things actually work.",
+    "real systems, real constraints.",
   ];
 
   useEffect(() => {
@@ -109,7 +105,7 @@ const LandingPage = () => {
             </div>
 
             <p className="text-xs md:text-sm text-gray-500 max-w-md">
-              While it decides, feel free to explore the portfolio.
+              Scroll down to explore the work, the stack, and the journey so far.
             </p>
           </main>
         </div>

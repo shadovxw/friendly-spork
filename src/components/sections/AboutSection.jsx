@@ -1,7 +1,10 @@
 import BlurReveal from '../effects/BlurReveal';
 import TextReveal from '../effects/TextReveal';
-import PulsingCore from '../effects/PulsingCore';
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, lazy, Suspense } from 'react';
+
+// Lazy-loaded: PulsingCore pulls in three.js + @react-three/fiber/drei.
+// It lives below the fold, so we keep that weight off the initial bundle.
+const PulsingCore = lazy(() => import('../effects/PulsingCore'));
 
 const PERSONNEL_LABEL = "The Profile";
 const MAIN_HEADING_LINE_1 = "Limitless";
@@ -47,7 +50,9 @@ const ProfileHeaderSection = () => {
 
           {/* Right Side - PulsingCore */}
           <div className="flex-shrink-0 hidden md:block absolute right-20 top-1/2 -translate-y-1/2 w-[500px] h-[500px] lg:w-[650px] lg:h-[650px] xl:w-[800px] xl:h-[800px] 2xl:w-[900px] 2xl:h-[900px] z-20 overflow-visible">
-            <PulsingCore />
+            <Suspense fallback={null}>
+              <PulsingCore />
+            </Suspense>
           </div>
         </div>
       </div>

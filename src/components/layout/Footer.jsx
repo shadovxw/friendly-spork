@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ConstellationCanvas from '../effects/ConstellationCanvas';
 import MagneticButton from '../ui/MagneticButton';
+import ContactForm from '../ui/ContactForm';
 import { useSystem } from '../../hooks/useSystem';
 
 const Footer = () => {
@@ -84,12 +85,12 @@ const Footer = () => {
         </h2>
 
         <div className="flex flex-col md:flex-row gap-8 items-center justify-center">
-          <MagneticButton
+          {/* <MagneticButton
             href={`mailto:${contactInfo.email}`}
             className="px-10 py-4 bg-white text-black font-black uppercase tracking-widest text-xs rounded-full hover:bg-cyan-400 transition-all duration-300"
           >
             Start a Project
-          </MagneticButton>
+          </MagneticButton> */}
 
           <div className="flex gap-8">
             {socialLinks.map((social) => (
@@ -107,6 +108,9 @@ const Footer = () => {
             ))}
           </div>
         </div>
+
+        {/* Functional contact form */}
+        <ContactForm />
       </div>
 
       {/* 3. INTEGRATED SYSTEM TERMINAL (BOTTOM) */}

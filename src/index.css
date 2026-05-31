@@ -367,3 +367,31 @@ html {
   pointer-events: none;
   z-index: 11;
 }
+
+/* --- REDUCED MOTION SUPPORT --- */
+/* Honors the OS-level "reduce motion" preference: kills the continuous
+   animations (noise, scanlines, glitch, marquee) and instant-scrolls. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .bg-noise,
+  .crt-scanline,
+  .animate-marquee,
+  .animate-marquee2,
+  .animate-text-gradient,
+  .glitch-text::before,
+  .glitch-text::after {
+    animation: none !important;
+  }
+}
