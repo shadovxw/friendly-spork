@@ -16,6 +16,18 @@ const BG_TEXT = "DEVELOPER ENGINEER ARCHITECT";
 
 // === HEADER SECTION ===
 const ProfileHeaderSection = () => {
+  // Mount the heavy Spline scene only when it is about to be seen (and never on phones, where the box is display:none)
+  const coreRef = useRef(null);
+  const [coreNear, setCoreNear] = useState(false);
+  useEffect(() => {
+    if (!coreRef.current) return;
+    const io = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) { setCoreNear(true); io.disconnect(); }
+    }, { rootMargin: '800px 0px' });
+    io.observe(coreRef.current);
+    return () => io.disconnect();
+  }, []);
+
   return (
     <section className="relative w-full h-[60vh] min-h-[500px] bg-[#0b0a0d] flex items-center overflow-visible">
       <div className="absolute top-1/2 -translate-y-1/2 left-0 w-full opacity-10 pointer-events-none select-none z-0">
@@ -29,7 +41,8 @@ const ProfileHeaderSection = () => {
       <div className="w-full z-10 px-6 md:px-20">
         <div className="max-w-7xl w-full flex flex-col md:flex-row items-center justify-between gap-8">
           {/* Left Side - Text Content */}
-          <div className="max-w-4xl w-full">
+          {/* z-30 + a width cap on large screens keep the text clear of (and above) the knot */}
+          <div className="relative z-30 max-w-4xl w-full lg:max-w-[46%]">
             <div className="mb-6 md:mb-8 border-l-2 border-cyan-500 pl-4 md:pl-8">
               <BlurReveal>
                 <h2 className="text-[10px] md:text-sm font-bold tracking-[0.5em] text-cyan-400 uppercase mb-1 md:mb-2">
@@ -49,10 +62,12 @@ const ProfileHeaderSection = () => {
           </div>
 
           {/* Right Side - PulsingCore */}
-          <div className="flex-shrink-0 hidden md:block absolute right-20 top-1/2 -translate-y-1/2 w-[500px] h-[500px] lg:w-[650px] lg:h-[650px] xl:w-[800px] xl:h-[800px] 2xl:w-[900px] 2xl:h-[900px] z-20 overflow-visible">
-            <Suspense fallback={null}>
-              <PulsingCore />
-            </Suspense>
+          <div ref={coreRef} className="flex-shrink-0 hidden md:block absolute right-20 xl:right-4 top-1/2 -translate-y-1/2 w-[500px] h-[500px] lg:w-[650px] lg:h-[650px] xl:w-[800px] xl:h-[800px] 2xl:w-[900px] 2xl:h-[900px] z-20 overflow-visible">
+            {coreNear && (
+              <Suspense fallback={null}>
+                <PulsingCore />
+              </Suspense>
+            )}
           </div>
         </div>
       </div>
