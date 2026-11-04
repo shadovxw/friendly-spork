@@ -196,6 +196,19 @@ const LandingPage = () => {
         {/* Gradient Overlay: Darker on the LEFT to make text readable */}
         <div className={`absolute inset-0 z-10 bg-gradient-to-r from-black via-black/65 to-transparent transition-opacity duration-2000 ${showLandingContent ? 'opacity-100' : 'opacity-0'}`} />
         <div className="absolute inset-x-0 bottom-0 h-1/2 z-10 bg-gradient-to-t from-black/80 to-transparent pointer-events-none" />
+        {/* Glow in the dead area under the CTAs (cyan source: the site's hue overlay shifts it to purple) */}
+        <div
+          className="absolute inset-0 z-10 pointer-events-none"
+          style={{ background: 'radial-gradient(ellipse at 10% 90%, rgb(8 145 178 / 0.28), transparent 60%)' }}
+        />
+
+        {/* Scroll cue */}
+        <div className="pointer-events-none absolute bottom-6 left-1/2 z-20 hidden -translate-x-1/2 flex-col items-center gap-2 md:flex">
+          <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/40">scroll</span>
+          <span className="relative h-12 w-px bg-white/15">
+            <span className="scroll-cue-dot absolute left-1/2 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-cyan-400" />
+          </span>
+        </div>
 
         {/* Intro Overlay Text (z-40) */}
         {enableIntro && (
@@ -211,15 +224,15 @@ const LandingPage = () => {
         */}
         <div className={`relative z-20 h-full w-full flex flex-col justify-end items-start px-8 pb-12 md:px-16 lg:px-24 md:justify-center md:pt-32 md:pb-56 transition-all duration-1000 ${showLandingContent ? 'opacity-100' : 'opacity-0'}`}>
 
-          <main className="max-w-4xl text-left">
+          <main className="max-w-6xl text-left">
             <p className={`text-[11px] md:text-xs text-cyan-400 font-bold mb-4 tracking-[0.35em] uppercase transition-all duration-1000 delay-500 ${showLandingContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
               Software Engineer · Systems & Infrastructure
             </p>
 
             {/* Focal point: the name */}
-            <h1 className={`text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-[0.95] mb-5 transition-all duration-1000 delay-[600ms] ${showLandingContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
-              <HyperText text="Vrishank" className="inline-block" />
-              <br />
+            <h1 className={`text-5xl md:text-7xl lg:text-7xl xl:text-8xl lg:whitespace-nowrap font-black tracking-tighter leading-[0.95] mb-5 transition-all duration-1000 delay-[600ms] ${showLandingContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+              <HyperText text="Vrishank" className="inline-block" />{' '}
+              <br className="lg:hidden" />
               <HyperText text="Warrier" className="inline-block" />
               <span className="text-cyan-400 animate-pulse drop-shadow-[0_0_10px_currentColor]">.</span>
             </h1>

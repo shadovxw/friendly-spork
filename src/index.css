@@ -517,3 +517,37 @@ html {
 @media (prefers-reduced-motion: reduce) {
   .hero-glitch, .hero-glitch-band { animation: none; }
 }
+
+/* --- CARD CURSOR GLOW (HoloCard glow prop) --- */
+.holo-glow::before,
+.holo-glow::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit;
+  pointer-events: none; opacity: 0; transition: opacity 300ms;
+}
+/* gradient border that tracks the cursor */
+.holo-glow::before {
+  z-index: 30; padding: 1px;
+  background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%), rgb(34 211 238 / 0.95), transparent 65%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+/* faint fill under the cursor */
+.holo-glow::after {
+  z-index: 5;
+  background: radial-gradient(360px circle at var(--mx, 50%) var(--my, 50%), rgb(34 211 238 / 0.08), transparent 70%);
+}
+.holo-glow:hover::before,
+.holo-glow:hover::after { opacity: 1; }
+
+/* --- HERO SCROLL CUE --- */
+.scroll-cue-dot { animation: scrollCue 1.8s ease-in-out infinite; }
+@keyframes scrollCue {
+  0%   { top: 0; opacity: 0; }
+  20%  { opacity: 1; }
+  80%  { opacity: 1; }
+  100% { top: calc(100% - 6px); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scroll-cue-dot { animation: none; top: 0; }
+}
