@@ -69,7 +69,7 @@ const VelocityMarquee = () => {
   }, []);
 
   return (
-    <div className="relative w-full h-[120px] md:h-[190px] overflow-hidden flex items-center bg-neutral-900 border-y border-white/5">
+    <div className="relative w-full h-[120px] md:h-[190px] overflow-hidden flex items-center bg-[#0b0a0d] border-y border-white/5">
 
       {/* The Slider Container */}
       <div ref={slider} className="absolute whitespace-nowrap flex">
@@ -87,7 +87,7 @@ const VelocityMarquee = () => {
       </div>
 
       {/* Overlay Vignette for depth */}
-      <div className="absolute inset-0 bg-gradient-to-r from-black via-transparent to-black z-10 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-r from-[#0b0a0d] via-transparent to-[#0b0a0d] z-10 pointer-events-none" />
 
     </div>
   );

@@ -291,8 +291,8 @@ html {
   left: -50%;
   width: 200%;
   height: 200%;
-  z-index: 5;
-  /* Behind content */
+  z-index: 30;
+  /* Above page content (grain also breaks up gradient banding) but below the nav */
   pointer-events: none;
   opacity: 0.05;
   /* Adjust visibility */

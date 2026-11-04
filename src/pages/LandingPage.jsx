@@ -199,11 +199,14 @@ const LandingPage = () => {
         {/* Glow in the dead area under the CTAs (cyan source: the site's hue overlay shifts it to purple) */}
         <div
           className="absolute inset-0 z-10 pointer-events-none"
-          style={{ background: 'radial-gradient(ellipse at 10% 90%, rgb(8 145 178 / 0.28), transparent 60%)' }}
+          style={{ background: 'radial-gradient(ellipse 60% 55% at 0% 100%, rgb(8 145 178 / 0.32), transparent 100%)' }}
         />
 
-        {/* Scroll cue */}
-        <div className="pointer-events-none absolute bottom-6 left-1/2 z-20 hidden -translate-x-1/2 flex-col items-center gap-2 md:flex">
+        {/* Fade into the marquee below so the hero doesn't end on a hard edge */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-[180px] bg-gradient-to-b from-transparent to-[#0b0a0d]" />
+
+        {/* Scroll cue (far right edge, clear of the portrait's face) */}
+        <div className="pointer-events-none absolute right-6 top-[72%] z-20 hidden flex-col items-center gap-2 md:flex">
           <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/40">scroll</span>
           <span className="relative h-12 w-px bg-white/15">
             <span className="scroll-cue-dot absolute left-1/2 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-cyan-400" />
@@ -251,14 +254,14 @@ const LandingPage = () => {
             <div className={`flex flex-wrap items-center gap-3 transition-all duration-1000 delay-[900ms] ${showLandingContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
               <a
                 href="#projects"
-                className="px-7 py-3 rounded-full bg-white text-black font-mono text-xs font-bold uppercase tracking-[0.2em] transition-colors hover:bg-cyan-400"
+                className="inline-flex h-11 items-center px-8 rounded-full bg-white text-black font-mono text-[13px] font-bold uppercase tracking-[0.2em] transition-colors hover:bg-cyan-400"
               >
                 View projects
               </a>
               <a
                 href={resumeFile}
                 download="Vrishank_Warrier_Resume.pdf"
-                className="px-7 py-3 rounded-full border border-white/30 text-white font-mono text-xs font-bold uppercase tracking-[0.2em] transition-colors hover:border-cyan-400 hover:text-cyan-400"
+                className="inline-flex h-11 items-center px-8 rounded-full border border-white/30 text-white font-mono text-[13px] font-bold uppercase tracking-[0.2em] transition-colors hover:border-cyan-400 hover:text-cyan-400"
               >
                 Resume
               </a>

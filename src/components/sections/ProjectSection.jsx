@@ -83,7 +83,7 @@ const ProjectSection = () => {
   const { playClick } = useSystem();
 
   return (
-    <section id="projects" className="relative w-full min-h-screen py-32 px-6 md:px-20 bg-black z-10">
+    <section id="projects" className="relative w-full min-h-screen py-32 px-6 md:px-20 bg-[#0b0a0d] z-10">
 
       {/* Section Header */}
       <div className="mb-20">
