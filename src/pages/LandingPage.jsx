@@ -97,7 +97,7 @@ const LandingPage = () => {
             </h1>
 
             {/* Rotating tagline (fixed height so the scramble never shifts the layout) */}
-            <div className="relative h-[2.5rem] md:h-[3rem] lg:h-[3.5rem] mb-2 flex justify-start w-full">
+            <div className="relative h-[2.5rem] md:h-[3rem] lg:h-[3.5rem] mb-6 flex justify-start w-full">
               <h2 className="text-lg md:text-xl lg:text-3xl font-medium leading-relaxed text-white">
                 <FlickeringHeadline
                   phrases={HERO_PHRASES}
@@ -105,10 +105,6 @@ const LandingPage = () => {
                 />
               </h2>
             </div>
-
-            <p className={`text-xs md:text-sm text-gray-300 mb-8 max-w-xl leading-relaxed transition-opacity duration-1000 delay-700 ${showLandingContent ? 'opacity-100' : 'opacity-0'}`}>
-              Hands-on with Kubernetes, OpenShift, CI/CD pipelines, ELK logging and HashiCorp Vault.
-            </p>
 
             {/* Calls to action */}
             <div className={`flex flex-wrap items-center gap-3 transition-all duration-1000 delay-[900ms] ${showLandingContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
