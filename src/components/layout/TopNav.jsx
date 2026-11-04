@@ -152,7 +152,7 @@ const TopNav = ({ show = true }) => {
       {/* MOBILE MENU OVERLAY — kept OUTSIDE <nav>: the nav has a transform from its
           show/hide animation, and a transformed ancestor makes a fixed child relative
           to the nav box (the top strip) instead of the full viewport. */}
-      <div id="mobile-menu" className={`fixed inset-0 bg-black flex flex-col items-center justify-center px-6 py-24 overflow-y-auto transition-all duration-500 md:hidden z-[190] ${isMenuOpen ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0 pointer-events-none'
+      <div id="mobile-menu" data-lenis-prevent className={`fixed inset-0 bg-black flex flex-col items-center justify-center px-6 py-24 overflow-y-auto transition-all duration-500 md:hidden z-[190] ${isMenuOpen ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0 pointer-events-none'
         }`}>
           {/* CRT & GLOW EFFECTS */}
           <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.03),rgba(0,255,0,0.01),rgba(0,0,255,0.03))] bg-[size:100%_4px,3px_100%]" />

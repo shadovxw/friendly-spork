@@ -126,7 +126,7 @@ const ContactModal = ({ isOpen, onClose }) => {
         // ignore child animations (photoScan etc.)
         if (closing && e.target === e.currentTarget && e.animationName === 'contactOut') finishClose();
       }}
-      className="contact-dialog m-auto w-[calc(100vw-2rem)] max-w-[720px] max-h-[calc(100dvh-2rem)] overflow-y-auto bg-neutral-900 text-white border border-white/10 p-0 shadow-2xl cursor-auto"
+      data-lenis-prevent className="contact-dialog m-auto w-[calc(100vw-2rem)] max-w-[720px] max-h-[calc(100dvh-2rem)] overflow-y-auto bg-neutral-900 text-white border border-white/10 p-0 shadow-2xl cursor-auto"
     >
       {/* Header bar */}
       <div className="flex items-center justify-between border-b border-white/10 px-4 py-2 font-mono text-[11px] uppercase tracking-[0.2em] text-gray-400">

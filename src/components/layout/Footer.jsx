@@ -193,7 +193,7 @@ const Footer = () => {
           </div>
 
           {/* Output Scroll Area */}
-          <div ref={scrollRef} className="h-24 overflow-y-auto p-4 font-mono text-[11px] leading-relaxed space-y-1 scrollbar-hide">
+          <div ref={scrollRef} data-lenis-prevent className="h-24 overflow-y-auto overscroll-contain p-4 font-mono text-[11px] leading-relaxed space-y-1 scrollbar-hide">
             {history.map((l, i) => (
               <div key={i} className={`${l.type === 'user' ? 'text-white font-bold' :
                   l.type === 'error' ? 'text-red-500' :

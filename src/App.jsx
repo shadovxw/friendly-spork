@@ -18,6 +18,9 @@ import ScrollProgress from './components/effects/ScrollProgress';
 import SystemMonitor from './components/system/SystemMonitor';
 import GlowCursor from './components/system/GlowCursor';
 
+// Easter egg: Ctrl K -> Rebuild, or Alt+Shift+S
+const SwarmRebuild = lazy(() => import('./components/effects/SwarmRebuild'));
+
 // Secondary routes — split out of the initial bundle.
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 const ConstructionPage = lazy(() => import('./pages/ConstructionPage'));
@@ -36,7 +39,8 @@ const App = () => {
       requestAnimationFrame(raf);
     }
     requestAnimationFrame(raf);
-    return () => lenis.destroy();
+    window.__lenis = lenis; // lets the swarm rebuild tour scroll through the same smooth scroller
+    return () => { delete window.__lenis; lenis.destroy(); };
   }, []);
 
   return (
@@ -62,6 +66,7 @@ const App = () => {
 
       <ScrollProgress />
       <SystemMonitor />
+      <Suspense fallback={null}><SwarmRebuild /></Suspense>
 
       <Router>
         <CommandPalette />

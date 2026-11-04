@@ -69,7 +69,7 @@ const VelocityMarquee = () => {
   }, []);
 
   return (
-    <div className="relative w-full h-[120px] md:h-[190px] overflow-hidden flex items-center bg-[#0b0a0d] border-y border-white/5">
+    <div data-swarm-skip className="relative w-full h-[120px] md:h-[190px] overflow-hidden flex items-center bg-[#0b0a0d] border-y border-white/5">
 
       {/* The Slider Container */}
       <div ref={slider} className="absolute whitespace-nowrap flex">

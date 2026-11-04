@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, FolderGit2, Layers, Briefcase, User, Mail, FileText, Github, Linkedin, Copy, Archive, ArrowUp, Send, Check } from 'lucide-react';
+import { Home, FolderGit2, Layers, Briefcase, User, Mail, FileText, Github, Linkedin, Copy, Archive, Send, Check, Sparkles } from 'lucide-react';
 import resumeFile from '../../assets/resume.pdf';
 import { withViewTransition } from '../../utils/viewTransition';
 import { modKeyLabel } from '../../utils/platform';
@@ -91,6 +91,15 @@ const CommandPalette = () => {
     { id: 'github', label: 'GitHub', hint: 'opens in a new tab', Icon: Github, keywords: 'code repos git source', action: () => window.open('https://github.com/shadovxw', '_blank', 'noopener') },
     { id: 'linkedin', label: 'LinkedIn', hint: 'opens in a new tab', Icon: Linkedin, keywords: 'connect network social', action: () => window.open('https://www.linkedin.com/in/vrishank-warrier-ab529628a/', '_blank', 'noopener') },
   ];
+
+  // the swarm rebuild needs the landing page on a desktop-sized screen without reduced motion
+  if (location.pathname === '/' && window.innerWidth >= 768 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    commands.push({
+      id: 'rebuild', label: 'Rebuild', hint: 'watch a swarm of agents build this page', Icon: Sparkles,
+      keywords: 'swarm agents ai build demo watch replay animation easter egg',
+      action: () => setTimeout(() => window.dispatchEvent(new CustomEvent('start-rebuild')), 250),
+    });
+  }
 
   // Search the label, the playful hint and the keywords
   const q = query.toLowerCase().trim();
@@ -206,7 +215,7 @@ const CommandPalette = () => {
         </div>
 
         {/* Results List */}
-        <div ref={listRef} className="max-h-[60vh] overflow-y-auto py-2">
+        <div ref={listRef} data-lenis-prevent className="max-h-[60vh] overflow-y-auto overscroll-contain py-2">
           {filteredCommands.length === 0 ? (
             <div className="p-4 text-gray-500 text-center text-sm font-mono">No commands found.</div>
           ) : (

@@ -628,3 +628,6 @@ html[data-nav="back"]::view-transition-new(root) { animation: vtInBack 380ms 140
 }
 @keyframes collabSweep { from { background-position: 100% 0; } to { background-position: 0 0; } }
 @media (prefers-reduced-motion: reduce) { .collab-gradient { animation: none; } }
+
+/* Swarm rebuild: pieces waiting to be built by an agent (see SwarmRebuild.jsx) */
+[data-swarm="h"] { visibility: hidden !important; }
