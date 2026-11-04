@@ -6,7 +6,7 @@ import BlurReveal from '../effects/BlurReveal';
 import { useSystem } from '../../hooks/useSystem';
 import { Github, ExternalLink, ArrowRight, LayoutGrid, Cloud, AudioLines, Hand, MessageSquare } from 'lucide-react';
 
-const projects = [
+export const projects = [
   {
     title: "SHADOVXW_CLOUD",
     category: "DevOps & Cloud Infrastructure",
@@ -87,7 +87,7 @@ const ProjectSection = () => {
   const navigate = useNavigate();
 
   return (
-    <section id="projects" className="relative w-full min-h-screen py-32 px-6 md:px-20 bg-[#0b0a0d] z-10">
+    <section id="projects" className="relative w-full py-24 px-6 md:px-20 bg-[#0b0a0d] z-10">
 
       {/* Section Header */}
       <BlurReveal className="mb-20" blur={4} y={16} duration={0.7}>
@@ -206,9 +206,12 @@ const ProjectSection = () => {
           </HoloCard>
 
           {/* --- CARD 6: ARCHIVE CTA --- */}
-          <HoloCard className="w-full bg-gradient-to-br from-purple-900/10 to-fuchsia-900/10 rounded-xl overflow-hidden group border border-purple-500/20 flex items-center justify-center transition-all hover:border-purple-500/50">
+          <HoloCard className="archive-card w-full bg-gradient-to-br from-purple-900/10 to-fuchsia-900/10 rounded-xl overflow-hidden group border border-purple-500/20 flex items-center justify-center transition-all hover:border-purple-500/50">
             <Link
               to="/projects"
+              // warm the lazy /projects chunk so the transition never waits on the network
+              onPointerEnter={() => import('../../pages/ConstructionPage')}
+              onFocus={() => import('../../pages/ConstructionPage')}
               onClick={(e) => {
                 playClick();
                 // remembered so "Return to base" can put the visitor back where they were

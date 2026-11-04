@@ -64,7 +64,7 @@ const ExperienceSection = () => {
   }, []);
 
   return (
-    <section id="experience" ref={containerRef} className="relative w-full bg-black py-32 px-4 overflow-hidden">
+    <section id="experience" ref={containerRef} className="relative w-full bg-[#0b0a0d] py-24 px-4 overflow-hidden">
 
       {/* Title */}
       <div className="relative z-10 mb-24 text-center">

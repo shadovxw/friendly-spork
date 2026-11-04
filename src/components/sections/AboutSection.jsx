@@ -17,7 +17,7 @@ const BG_TEXT = "DEVELOPER ENGINEER ARCHITECT";
 // === HEADER SECTION ===
 const ProfileHeaderSection = () => {
   return (
-    <section className="relative w-full h-[60vh] min-h-[500px] bg-neutral-900 flex items-center overflow-visible">
+    <section className="relative w-full h-[60vh] min-h-[500px] bg-[#0b0a0d] flex items-center overflow-visible">
       <div className="absolute top-1/2 -translate-y-1/2 left-0 w-full opacity-10 pointer-events-none select-none z-0">
         <BlurReveal delay={0.2}>
           <span className="text-[12rem] md:text-[20rem] font-black leading-none text-white whitespace-nowrap">
@@ -163,7 +163,7 @@ const HorizontalCardsSection = () => {
   }, []);
 
   return (
-    <section ref={sectionRef} className="relative w-full h-[400vh] bg-neutral-900 overflow-visible">
+    <section ref={sectionRef} className="relative w-full h-[400vh] bg-[#0b0a0d] overflow-visible">
 
       <div style={containerStyle} className="overflow-hidden flex items-center z-10">
         <div className="absolute top-32 left-0 w-full opacity-10 pointer-events-none select-none z-0">
