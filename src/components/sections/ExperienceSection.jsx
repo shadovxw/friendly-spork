@@ -146,6 +146,7 @@ const ExperienceSection = () => {
   const sectionRef = useRef(null);
   const trackRef = useRef(null);
   const fillRef = useRef(null);
+  const headDotRef = useRef(null);
   const dotRefs = useRef([]);
   const headRef = useRef(0); // px from the top of the track; read by the 3D cable every frame
 
@@ -187,6 +188,11 @@ const ExperienceSection = () => {
       const head = Math.min(Math.max(window.innerHeight * 0.55 - rect.top, 0), rect.height);
       headRef.current = head;
       if (fillRef.current) fillRef.current.style.height = `${head}px`;
+      // fade the head dot over the same 220px the rail mask (.rail-fade) uses
+      if (headDotRef.current) {
+        const left = rect.height - head; // px of rail remaining below the head
+        headDotRef.current.style.opacity = String(Math.min(1, Math.max(0, left / 220)));
+      }
 
       const next = dotRefs.current.map((dot) => {
         if (!dot) return false;
@@ -223,8 +229,11 @@ const ExperienceSection = () => {
         </BlurReveal>
       </div>
 
-      {/* pb/-mb: the rail runs on past the last card, through the section padding, toward About */}
-      <div ref={trackRef} className="relative max-w-5xl mx-auto pb-24 -mb-24">
+      {/* pb-40: empty track after the last card, where the rail dissolves */}
+      <div ref={trackRef} className="relative max-w-5xl mx-auto pb-40">
+
+        {/* everything rail-related fades out over the last 220px */}
+        <div aria-hidden="true" className="rail-fade pointer-events-none absolute inset-0">
 
         {/* --- BACKGROUND TRACK --- */}
         <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-1 bg-neutral-900 transform md:-translate-x-1/2 rounded-full"></div>
@@ -246,8 +255,10 @@ const ExperienceSection = () => {
           className="absolute left-4 md:left-1/2 top-0 w-1 bg-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.8)] transform md:-translate-x-1/2 rounded-full z-0"
           style={{ height: 0 }}
         >
-          <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 w-4 h-4 bg-white rounded-full shadow-[0_0_20px_rgba(255,255,255,1)]"></div>
+          <div ref={headDotRef} className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 w-4 h-4 bg-white rounded-full shadow-[0_0_20px_rgba(255,255,255,1)]"></div>
         </div>
+
+        </div>{/* /rail-fade */}
 
         {/* --- TIMELINE NODES --- */}
         <div className="relative z-10">

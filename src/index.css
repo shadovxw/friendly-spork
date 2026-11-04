@@ -610,3 +610,9 @@ html[data-nav="back"]::view-transition-new(root) { animation: vtInBack 380ms 140
   html[data-nav="back"]::view-transition-new(root),
   ::view-transition-group(archive-panel) { animation: none; }
 }
+
+/* Experience timeline: the rail layers dissolve over their last 220px (keep in sync with the head-dot fade in ExperienceSection) */
+.rail-fade {
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 220px), transparent);
+          mask-image: linear-gradient(to bottom, #000 calc(100% - 220px), transparent);
+}

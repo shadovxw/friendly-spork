@@ -1,6 +1,7 @@
 import BlurReveal from '../effects/BlurReveal';
 import TextReveal from '../effects/TextReveal';
 import React, { useRef, useEffect, useState, lazy, Suspense } from 'react';
+import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
 
 // Lazy-loaded: PulsingCore pulls in three.js + @react-three/fiber/drei.
 // It lives below the fold, so we keep that weight off the initial bundle.
@@ -19,6 +20,23 @@ const ProfileHeaderSection = () => {
   // Mount the heavy Spline scene only when it is about to be seen (and never on phones, where the box is display:none)
   const coreRef = useRef(null);
   const [coreNear, setCoreNear] = useState(false);
+
+  // --- Profile entrance (border, knot, background text), all driven by scroll position ---
+  const sectionRef = useRef(null);
+  const reduce = useReducedMotion();
+
+  // 0 = section top reaches the bottom of the screen, 1 = section is centred
+  const { scrollYProgress: enter } = useScroll({ target: sectionRef, offset: ['start end', 'center center'] });
+  // the whole time the section is on screen (background text drift)
+  const { scrollYProgress: pass } = useScroll({ target: sectionRef, offset: ['start end', 'end start'] });
+
+  const borderDraw = useTransform(enter, [0.35, 0.75], [0, 1]);
+  const coreScale = useTransform(enter, [0.2, 1], [0.55, 1]);
+  const coreRotate = useTransform(enter, [0.2, 1], [-35, 0]);
+  const coreY = useTransform(enter, [0.2, 1], [140, 0]);
+  const coreOpacity = useTransform(enter, [0.2, 0.5], [0, 1]);
+  const bgX = useTransform(pass, [0, 1], ['10%', '-25%']);
+
   useEffect(() => {
     if (!coreRef.current) return;
     const io = new IntersectionObserver(([entry]) => {
@@ -29,13 +47,15 @@ const ProfileHeaderSection = () => {
   }, []);
 
   return (
-    <section className="relative w-full h-[60vh] min-h-[500px] bg-[#0b0a0d] flex items-center overflow-visible">
+    <section ref={sectionRef} className="relative w-full h-[60vh] min-h-[500px] bg-[#0b0a0d] flex items-center overflow-visible">
       <div className="absolute top-1/2 -translate-y-1/2 left-0 w-full opacity-10 pointer-events-none select-none z-0">
-        <BlurReveal delay={0.2}>
-          <span className="text-[12rem] md:text-[20rem] font-black leading-none text-white whitespace-nowrap">
-            {BG_TEXT}
-          </span>
-        </BlurReveal>
+        <motion.div style={{ x: reduce ? 0 : bgX }}>
+          <BlurReveal delay={0.2}>
+            <span className="text-[12rem] md:text-[20rem] font-black leading-none text-white whitespace-nowrap">
+              {BG_TEXT}
+            </span>
+          </BlurReveal>
+        </motion.div>
       </div>
 
       <div className="w-full z-10 px-6 md:px-20">
@@ -43,7 +63,12 @@ const ProfileHeaderSection = () => {
           {/* Left Side - Text Content */}
           {/* z-30 + a width cap on large screens keep the text clear of (and above) the knot */}
           <div className="relative z-30 max-w-4xl w-full lg:max-w-[46%]">
-            <div className="mb-6 md:mb-8 border-l-2 border-cyan-500 pl-4 md:pl-8">
+            <div className="relative mb-6 md:mb-8 pl-4 md:pl-8">
+              <motion.span
+                aria-hidden="true"
+                className="absolute left-0 top-0 h-full w-[1.5px] origin-top bg-cyan-200 shadow-[0_0_10px_2px_rgb(34_211_238/0.6)]"
+                style={{ scaleY: reduce ? 1 : borderDraw }}
+              />
               <BlurReveal>
                 <h2 className="text-[10px] md:text-sm font-bold tracking-[0.5em] text-cyan-400 uppercase mb-1 md:mb-2">
                   {PERSONNEL_LABEL}
@@ -63,11 +88,17 @@ const ProfileHeaderSection = () => {
 
           {/* Right Side - PulsingCore */}
           <div ref={coreRef} className="flex-shrink-0 hidden md:block absolute right-20 xl:right-4 top-1/2 -translate-y-1/2 w-[500px] h-[500px] lg:w-[650px] lg:h-[650px] xl:w-[800px] xl:h-[800px] 2xl:w-[900px] 2xl:h-[900px] z-20 overflow-visible">
-            {coreNear && (
-              <Suspense fallback={null}>
-                <PulsingCore />
-              </Suspense>
-            )}
+            {/* animate an inner wrapper: this div already uses a translate for its own positioning */}
+            <motion.div
+              className="h-full w-full"
+              style={reduce ? undefined : { scale: coreScale, rotate: coreRotate, y: coreY, opacity: coreOpacity }}
+            >
+              {coreNear && (
+                <Suspense fallback={null}>
+                  <PulsingCore />
+                </Suspense>
+              )}
+            </motion.div>
           </div>
         </div>
       </div>
@@ -80,7 +111,7 @@ const CARD_ONE = {
   index: "01",
   title: "The Profession.",
   description:
-    "I am currently gaining real-world experience through an intensive internship, contributing to deployment pipelines and Generative AI solutions. My focus is on understanding how production systems are designed, deployed, and maintained, bridging academic concepts with practical engineering realities."
+    "I'm a software engineer building across the stack: AI solutions, system design, and UI-focused websites with a strong visual theme. I contribute to deployment pipelines and Generative AI solutions, and I care about how production systems are designed, deployed, and maintained, and about interfaces that feel as considered as the systems behind them."
 };
 
 
