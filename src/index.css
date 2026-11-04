@@ -493,3 +493,27 @@ html {
   from { transform: translateY(-100%); opacity: 1; }
   to { transform: translateY(300%); opacity: 0; }
 }
+
+/* --- HERO PORTRAIT GLITCH --- */
+.hero-glitch { animation: heroGlitch 170ms steps(1, end) 1; }
+@keyframes heroGlitch {
+  0%   { transform: translateX(-6px); filter: url(#rgb-split) brightness(1.3); }
+  25%  { transform: translateX(5px) skewX(-1deg); filter: url(#rgb-split) contrast(1.4); }
+  50%  { transform: translateX(-3px); filter: url(#rgb-split); }
+  75%  { transform: translateX(7px) skewX(1deg); filter: url(#rgb-split) brightness(1.2); }
+  100% { transform: none; filter: none; }
+}
+.hero-glitch-band {
+  position: absolute; left: 0; right: 0; height: 7%; pointer-events: none;
+  background: rgb(255 255 255 / 0.12); mix-blend-mode: difference;
+  animation: heroBand 170ms steps(1, end) 1 both;
+}
+@keyframes heroBand {
+  0%   { top: 18%; }
+  33%  { top: 52%; }
+  66%  { top: 31%; }
+  100% { top: 74%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-glitch, .hero-glitch-band { animation: none; }
+}

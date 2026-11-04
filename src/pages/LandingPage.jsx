@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import TopNav from '../components/layout/TopNav';
 import ProjectSection from '../components/sections/ProjectSection';
@@ -17,6 +17,97 @@ const LandingPage = () => {
   const { enableIntro } = useOutletContext();
   const [showLandingContent, setShowLandingContent] = useState(!enableIntro);
   const [introFinished, setIntroFinished] = useState(!enableIntro);
+  const heroRef = useRef(null);
+  const [glitch, setGlitch] = useState(false);
+  const glitchTimer = useRef(0);
+  const lastFaceGlitch = useRef(0);
+
+  // Cursor spotlight: --mx/--my (eased toward the pointer) and --spot (on/off) drive the
+  // CSS in the hero. Written straight to the DOM so mouse moves never re-render React.
+  useEffect(() => {
+    const el = heroRef.current;
+    if (!el) return;
+    const pos = { x: 0, y: 0, tx: 0, ty: 0 };
+    let raf = 0;
+
+    const paint = () => {
+      pos.x += (pos.tx - pos.x) * 0.18;
+      pos.y += (pos.ty - pos.y) * 0.18;
+      el.style.setProperty('--mx', `${pos.x}px`);
+      el.style.setProperty('--my', `${pos.y}px`);
+      const settled = Math.abs(pos.tx - pos.x) < 0.5 && Math.abs(pos.ty - pos.y) < 0.5;
+      raf = settled ? 0 : requestAnimationFrame(paint);
+    };
+
+    const onMove = (e) => {
+      if (e.pointerType === 'touch') return;
+      const r = el.getBoundingClientRect();
+      pos.tx = e.clientX - r.left;
+      pos.ty = e.clientY - r.top;
+      if (el.style.getPropertyValue('--spot') !== '1') {
+        pos.x = pos.tx; // first entry: start under the cursor instead of sliding in
+        pos.y = pos.ty;
+        el.style.setProperty('--spot', '1');
+      }
+      if (!raf) raf = requestAnimationFrame(paint);
+    };
+    const onLeave = () => el.style.setProperty('--spot', '0');
+
+    el.addEventListener('pointermove', onMove);
+    el.addEventListener('pointerleave', onLeave);
+    return () => {
+      el.removeEventListener('pointermove', onMove);
+      el.removeEventListener('pointerleave', onLeave);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  // Short RGB-split glitch on the portrait: every 6-8s while idle, and when the cursor crosses the face.
+  const triggerGlitch = useCallback(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    setGlitch(true);
+    clearTimeout(glitchTimer.current);
+    glitchTimer.current = setTimeout(() => setGlitch(false), 200);
+  }, []);
+
+  useEffect(() => {
+    if (!showLandingContent) return;
+    let id;
+    const schedule = () => {
+      id = setTimeout(() => {
+        triggerGlitch();
+        schedule();
+      }, 6000 + Math.random() * 2000);
+    };
+    schedule();
+    return () => {
+      clearTimeout(id);
+      clearTimeout(glitchTimer.current);
+    };
+  }, [showLandingContent, triggerGlitch]);
+
+  // Face zone (desktop): tracked from the pointer position, so no element sits over the hero text.
+  useEffect(() => {
+    const el = heroRef.current;
+    if (!el) return;
+    let inFace = false;
+    const onMove = (e) => {
+      if (e.pointerType === 'touch' || window.innerWidth < 768) return;
+      const r = el.getBoundingClientRect();
+      const fx = (e.clientX - r.left) / r.width;
+      const fy = (e.clientY - r.top) / r.height;
+      const inside = fx > 0.48 && fx < 0.76 && fy > 0.14 && fy < 0.66;
+      if (inside && !inFace && Date.now() - lastFaceGlitch.current > 2500) {
+        lastFaceGlitch.current = Date.now();
+        triggerGlitch();
+      }
+      inFace = inside;
+    };
+    el.addEventListener('pointermove', onMove);
+    return () => el.removeEventListener('pointermove', onMove);
+  }, [triggerGlitch]);
+
+  const spotMask = 'radial-gradient(circle 240px at var(--mx) var(--my), #000 0%, transparent 100%)';
 
   const HERO_PHRASES = [
     "I build systems that hold up.",
@@ -55,18 +146,52 @@ const LandingPage = () => {
       <TopNav show={showLandingContent} />
 
       {/* 1. HERO SECTION */}
-      <section className="relative h-screen w-full overflow-hidden">
+      <section
+        ref={heroRef}
+        className="relative h-screen w-full overflow-hidden"
+        style={{ '--mx': '-9999px', '--my': '-9999px', '--spot': 0 }}
+      >
+        {/* RGB channel-split used by the glitch animation (see .hero-glitch in index.css) */}
+        <svg width="0" height="0" className="absolute" aria-hidden="true" focusable="false">
+          <filter id="rgb-split" x="-5%" y="0" width="110%" height="100%" colorInterpolationFilters="sRGB">
+            <feColorMatrix in="SourceGraphic" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="r" />
+            <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="g" />
+            <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="b" />
+            <feOffset in="r" dx="-8" dy="0" result="r2" />
+            <feOffset in="b" dx="8" dy="0" result="b2" />
+            <feBlend in="r2" in2="g" mode="screen" result="rg" />
+            <feBlend in="rg" in2="b2" mode="screen" />
+          </filter>
+        </svg>
 
         {/* Background Image (Static, Clean) */}
-        <div className="absolute inset-0 z-0">
-          <div className={`w-full h-full transition-transform duration-[20s] ease-linear transform ${showLandingContent ? 'scale-110' : 'scale-100'}`}>
+        <div className={`absolute inset-0 z-0 ${glitch ? 'hero-glitch' : ''}`}>
+          <div className={`relative w-full h-full transition-transform duration-[20s] ease-linear transform ${showLandingContent ? 'scale-110' : 'scale-100'}`}>
             <img
               src={heroImage}
               alt="Background"
               className="w-full h-full object-cover object-center filter grayscale contrast-125 brightness-75" // Increased darkness slightly
             />
+            {/* Spotlight: the same painting, brighter, revealed only under the cursor */}
+            <img
+              src={heroImage}
+              alt=""
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 w-full h-full object-cover object-center filter grayscale contrast-150 brightness-[1.8] transition-opacity duration-500"
+              style={{ opacity: 'var(--spot)', WebkitMaskImage: spotMask, maskImage: spotMask }}
+            />
           </div>
+          {glitch && <div className="hero-glitch-band" />}
         </div>
+
+        {/* Soft glow that rides with the spotlight */}
+        <div
+          className="pointer-events-none absolute inset-0 z-10 mix-blend-screen transition-opacity duration-500"
+          style={{
+            opacity: 'var(--spot)',
+            background: 'radial-gradient(circle 340px at var(--mx) var(--my), rgba(34,211,238,0.22), transparent 70%)',
+          }}
+        />
 
         {/* Gradient Overlay: Darker on the LEFT to make text readable */}
         <div className={`absolute inset-0 z-10 bg-gradient-to-r from-black via-black/65 to-transparent transition-opacity duration-2000 ${showLandingContent ? 'opacity-100' : 'opacity-0'}`} />
@@ -93,11 +218,14 @@ const LandingPage = () => {
 
             {/* Focal point: the name */}
             <h1 className={`text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-[0.95] mb-5 transition-all duration-1000 delay-[600ms] ${showLandingContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
-              Vrishank<br />Warrier<span className="text-cyan-400">.</span>
+              <HyperText text="Vrishank" className="inline-block" />
+              <br />
+              <HyperText text="Warrier" className="inline-block" />
+              <span className="text-cyan-400 animate-pulse drop-shadow-[0_0_10px_currentColor]">.</span>
             </h1>
 
             {/* Rotating tagline (fixed height so the scramble never shifts the layout) */}
-            <div className="relative h-[2.5rem] md:h-[3rem] lg:h-[3.5rem] mb-6 flex justify-start w-full">
+            <div className="relative h-[3.75rem] md:h-[3rem] lg:h-[3.5rem] mb-6 flex justify-start w-full">
               <h2 className="text-lg md:text-xl lg:text-3xl font-medium leading-relaxed text-white">
                 <FlickeringHeadline
                   phrases={HERO_PHRASES}
