@@ -275,13 +275,24 @@ const LandingPage = () => {
               >
                 View projects
               </a>
-              <a
-                href={resumeFile}
-                download="Vrishank_Warrier_Resume.pdf"
-                className="inline-flex h-11 items-center px-8 rounded-full border border-white/30 text-white font-mono text-[13px] font-bold uppercase tracking-[0.2em] transition-colors hover:border-cyan-400 hover:text-cyan-400"
-              >
-                Resume
-              </a>
+              <span className="group/resume relative inline-flex">
+                <a
+                  href={resumeFile}
+                  download="Vrishank_Warrier_Resume.pdf"
+                  aria-describedby="resume-tip"
+                  className="inline-flex h-11 items-center px-8 rounded-full border border-white/30 text-white font-mono text-[13px] font-bold uppercase tracking-[0.2em] transition-colors hover:border-cyan-400 hover:text-cyan-400"
+                >
+                  Resume
+                </a>
+                {/* shown on hover and keyboard focus */}
+                <span
+                  id="resume-tip"
+                  role="tooltip"
+                  className="pointer-events-none absolute bottom-full left-1/2 mb-3 -translate-x-1/2 translate-y-1 whitespace-nowrap rounded-md border border-cyan-500/30 bg-[#0b0a0d]/95 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.2em] text-cyan-200 opacity-0 shadow-lg shadow-black/50 transition-all duration-200 group-hover/resume:translate-y-0 group-hover/resume:opacity-100 group-focus-within/resume:translate-y-0 group-focus-within/resume:opacity-100"
+                >
+                  Click to download resume
+                </span>
+              </span>
             </div>
           </main>
         </div>
