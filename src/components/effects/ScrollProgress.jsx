@@ -32,7 +32,7 @@ const ScrollProgress = () => {
 
   return (
     <div 
-      className={`fixed bottom-8 right-8 z-50 transition-all duration-500 ${progress > 0.02 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}
+      className={`fixed bottom-28 right-8 z-50 transition-all duration-500 ${progress > 0.02 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}
     >
       <button
         onClick={scrollToTop}

@@ -82,7 +82,7 @@ const LandingPage = () => {
         {/* Main Hero Content (z-20) 
             LAYOUT FIX: Changed to 'items-start' (Left Align) to balance the face on the right.
         */}
-        <div className={`relative z-20 h-full w-full flex flex-col justify-end items-start p-8 md:p-20 transition-all duration-1000 ${showLandingContent ? 'opacity-100' : 'opacity-0'}`}>
+        <div className={`relative z-20 h-full w-full flex flex-col justify-end items-start p-8 md:p-20 md:pb-48 transition-all duration-1000 ${showLandingContent ? 'opacity-100' : 'opacity-0'}`}>
 
           <main className="max-w-4xl mb-10 md:mb-0 text-left">
             <div className="overflow-hidden flex flex-col items-start">

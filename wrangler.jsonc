@@ -1,7 +1,14 @@
 {
   "name": "portfolio",
   "compatibility_date": "2026-02-15",
+  "main": "./worker/index.js",
   "assets": {
-    "directory": "./dist"
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application"
+  },
+  "vars": {
+    "AI_PROVIDER": "gemini",
+    "GEMINI_MODEL": "gemini-2.0-flash"
   }
 }

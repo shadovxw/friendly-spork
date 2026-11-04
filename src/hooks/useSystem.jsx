@@ -3,8 +3,8 @@ import useSound from 'use-sound';
 
 const SystemContext = createContext();
 
-const hoverSfx = '/sounds/hover.mp3'; 
-const clickSfx = '/sounds/click.mp3';
+const hoverSfx = '/sounds/hover.wav';
+const clickSfx = '/sounds/click.wav';
 
 export const SystemProvider = ({ children }) => {
   const [matrixMode, setMatrixMode] = useState(false);

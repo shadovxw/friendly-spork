@@ -1,9 +1,6 @@
 import React, { useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Lenis from 'lenis';
-import { inject } from '@vercel/analytics';
-
-inject(); // This starts tracking page views automatically
 
 // Components
 import Layout from './components/layout/Layout';
@@ -17,6 +14,7 @@ import CyberGrid from './components/effects/CyberGrid';
 import ScrollProgress from './components/effects/ScrollProgress';
 import SystemMonitor from './components/system/SystemMonitor';
 import GlowCursor from './components/system/GlowCursor';
+import MiniMe from './components/ui/MiniMe';
 
 // Secondary routes — split out of the initial bundle.
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
@@ -62,6 +60,7 @@ const App = () => {
 
       <ScrollProgress />
       <SystemMonitor />
+      <MiniMe />
 
       <Router>
         <CommandPalette />
