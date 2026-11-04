@@ -1,8 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Github, Linkedin, FileText, X, MapPin, Copy, Check, ArrowUpRight } from 'lucide-react';
 import profileImage from '../../assets/profile.jpg';
 import resumeFile from '../../assets/resume.pdf';
 import { useSystem } from '../../hooks/useSystem';
+import HyperText from '../effects/HyperText';
 
 const EMAIL = 'vrishank.w02@gmail.com';
 
@@ -12,11 +13,58 @@ const ContactModal = ({ isOpen, onClose }) => {
   const { playClick } = useSystem();
   const dialogRef = useRef(null);
   const [copied, setCopied] = useState(false);
+  const [closing, setClosing] = useState(false);
+
+  const finishClose = useCallback(() => {
+    setClosing(false);
+    dialogRef.current?.close(); // fires the native 'close' event -> onClose
+  }, []);
+
+  // Every close path (Esc, backdrop, x) plays the exit animation first.
+  const requestClose = useCallback(() => {
+    const d = dialogRef.current;
+    if (!d?.open || closing) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return finishClose();
+    setClosing(true);
+  }, [closing, finishClose]);
+
+  // Esc: stop the instant close and run the animated one instead
+  useEffect(() => {
+    const d = dialogRef.current;
+    if (!isOpen || !d) return;
+    const onCancel = (e) => {
+      e.preventDefault();
+      requestClose();
+    };
+    d.addEventListener('cancel', onCancel);
+    return () => d.removeEventListener('cancel', onCancel);
+  }, [isOpen, requestClose]);
+
+  // Safety net in case animationend never fires (e.g. tab hidden mid-close)
+  useEffect(() => {
+    if (!closing) return;
+    const id = setTimeout(finishClose, 500);
+    return () => clearTimeout(id);
+  }, [closing, finishClose]);
+
+  // Backdrop click only counts when the press started AND ended on the backdrop,
+  // so dragging to select text inside the card doesn't close it.
+  const downOnBackdrop = useRef(false);
 
   useEffect(() => {
     if (!isOpen) return;
     const dialog = dialogRef.current;
-    if (dialog && !dialog.open) dialog.showModal();
+    if (dialog && !dialog.open) {
+      const opener = document.activeElement; // the Contact button, before focus moves
+      dialog.showModal();
+      const o = opener && opener !== document.body ? opener.getBoundingClientRect() : null;
+      if (o) {
+        // the card powers on from the button that opened it
+        const r = dialog.getBoundingClientRect();
+        dialog.style.setProperty('--dx', `${o.left + o.width / 2 - (r.left + r.width / 2)}px`);
+        dialog.style.setProperty('--dy', `${o.top + o.height / 2 - (r.top + r.height / 2)}px`);
+      }
+    }
 
     const previous = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
@@ -33,7 +81,7 @@ const ContactModal = ({ isOpen, onClose }) => {
 
   if (!isOpen) return null;
 
-  const close = () => dialogRef.current?.close();
+  const close = requestClose;
 
   const copyEmail = async () => {
     playClick();
@@ -66,9 +114,19 @@ const ContactModal = ({ isOpen, onClose }) => {
       ref={dialogRef}
       aria-labelledby="contact-title"
       onClose={onClose}
-      // a click that lands on the <dialog> itself (not its children) is a backdrop click
-      onClick={(e) => e.target === e.currentTarget && close()}
-      className="m-auto w-[calc(100vw-2rem)] max-w-[720px] max-h-[calc(100dvh-2rem)] overflow-y-auto bg-neutral-900 text-white border border-white/10 p-0 shadow-2xl cursor-auto animate-[modalIn_180ms_ease-out] motion-reduce:animate-none backdrop:bg-black/90 backdrop:backdrop-blur-md"
+      data-closing={closing || undefined}
+      // a press that lands on the <dialog> itself (not its children) is a backdrop press
+      onPointerDown={(e) => {
+        downOnBackdrop.current = e.target === e.currentTarget;
+      }}
+      onClick={(e) => {
+        if (downOnBackdrop.current && e.target === e.currentTarget) requestClose();
+      }}
+      onAnimationEnd={(e) => {
+        // ignore child animations (photoScan etc.)
+        if (closing && e.target === e.currentTarget && e.animationName === 'contactOut') finishClose();
+      }}
+      className="contact-dialog m-auto w-[calc(100vw-2rem)] max-w-[720px] max-h-[calc(100dvh-2rem)] overflow-y-auto bg-neutral-900 text-white border border-white/10 p-0 shadow-2xl cursor-auto"
     >
       {/* Header bar */}
       <div className="flex items-center justify-between border-b border-white/10 px-4 py-2 font-mono text-[11px] uppercase tracking-[0.2em] text-gray-400">
@@ -91,7 +149,7 @@ const ContactModal = ({ isOpen, onClose }) => {
 
       <div className="grid sm:grid-cols-[220px_1fr]">
         {/* Photo */}
-        <div className="relative aspect-[16/10] sm:aspect-auto sm:min-h-[300px] overflow-hidden bg-black group">
+        <div className="contact-photo relative aspect-[16/10] sm:aspect-auto sm:min-h-[300px] overflow-hidden bg-black group">
           <div
             className="absolute inset-0 bg-neutral-800"
             style={{ clipPath: 'polygon(10% 0, 100% 0, 100% 85%, 85% 100%, 0 100%, 0 10%)' }}
@@ -110,12 +168,15 @@ const ContactModal = ({ isOpen, onClose }) => {
         </div>
 
         {/* Details + actions */}
-        <div className="flex flex-col gap-5 p-5 sm:p-6">
+        <div className="contact-details flex flex-col gap-5 p-5 sm:p-6">
           <div>
             <h2 id="contact-title" className="text-3xl font-black uppercase leading-none tracking-tighter">
-              Vrishank
-              <br />
-              Warrier
+              <span className="block">
+                <HyperText text="Vrishank" triggerOnLoad />
+              </span>
+              <span className="block">
+                <HyperText text="Warrier" triggerOnLoad />
+              </span>
             </h2>
             <p className="mt-3 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.25em] text-fuchsia-400">
               <span className="h-[2px] w-6 bg-fuchsia-400" />

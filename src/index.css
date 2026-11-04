@@ -415,9 +415,78 @@ html {
 }
 
 /* --- CONTACT MODAL --- */
-@keyframes modalIn {
-  from { opacity: 0; transform: scale(0.96); }
-  to { opacity: 1; transform: scale(1); }
+.contact-dialog {
+  --dx: 0px; --dy: 0px;           /* set from JS: offset to the Contact button */
+  animation: contactIn 650ms ease-out both;
+}
+.contact-dialog::backdrop {
+  background:
+    repeating-linear-gradient(to bottom, rgb(255 255 255 / 0.025) 0 1px, transparent 1px 3px),
+    radial-gradient(ellipse at center, rgb(88 28 135 / 0.28), rgb(0 0 0 / 0.92) 70%);
+  backdrop-filter: blur(12px) saturate(0.6);
+  animation: backdropIn 420ms ease-out both;
+}
+.contact-dialog[data-closing] { animation: contactOut 340ms ease-in both; }
+.contact-dialog[data-closing]::backdrop { animation: backdropOut 340ms ease-in both; }
+
+/* scanline sweep over the whole card as it powers on */
+.contact-dialog::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 10;
+  background: linear-gradient(to bottom, transparent 40%, rgb(232 121 249 / 0.18) 48%,
+              rgb(255 255 255 / 0.4) 50%, transparent 52%) no-repeat;
+  background-size: 100% 200%;
+  animation: contactSweep 650ms 280ms ease-out both;
+}
+
+/* staggered contents */
+.contact-dialog .contact-photo { animation: photoReveal 520ms 300ms cubic-bezier(0.7, 0, 0.2, 1) both; }
+.contact-dialog .contact-details > * {
+  animation: detailIn 450ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(380ms + var(--i, 0) * 60ms);
+}
+.contact-details > :nth-child(2) { --i: 1; }
+.contact-details > :nth-child(3) { --i: 2; }
+.contact-details > :nth-child(4) { --i: 3; }
+.contact-details > :nth-child(5) { --i: 4; }
+.contact-details > :nth-child(6) { --i: 5; }
+
+@keyframes contactIn {
+  0%   { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.04, 0.01); filter: brightness(4); }
+  35%  { opacity: 1; transform: scale(1, 0.006); filter: brightness(4);
+         box-shadow: 0 0 40px 6px rgb(232 121 249 / 0.6); }
+  60%  { transform: scale(1, 1.03); filter: brightness(1.6);
+         box-shadow: -6px 0 0 rgb(232 121 249 / 0.7), 6px 0 0 rgb(34 211 238 / 0.7); }
+  68%  { transform: translateX(-4px);
+         box-shadow: 4px 0 0 rgb(232 121 249 / 0.6), -4px 0 0 rgb(34 211 238 / 0.6); }
+  76%  { transform: translateX(3px); filter: brightness(1.1);
+         box-shadow: -2px 0 0 rgb(232 121 249 / 0.4), 2px 0 0 rgb(34 211 238 / 0.4); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes contactOut {
+  0%   { transform: none; }
+  15%  { transform: translateX(3px);
+         box-shadow: -4px 0 0 rgb(232 121 249 / 0.6), 4px 0 0 rgb(34 211 238 / 0.6); }
+  50%  { opacity: 1; transform: scale(1, 0.006); filter: brightness(4); }
+  80%  { opacity: 1; transform: scale(0.02, 0.006); filter: brightness(5); }
+  100% { opacity: 0; transform: scale(0); }
+}
+@keyframes contactSweep {
+  from { background-position: 0 100%; opacity: 1; }
+  to   { background-position: 0 0%;   opacity: 0; }
+}
+@keyframes photoReveal {
+  from { clip-path: inset(0 100% 0 0); filter: grayscale(1) contrast(2) brightness(2); }
+  to   { clip-path: inset(0); }
+}
+@keyframes detailIn {
+  from { opacity: 0; transform: translateY(10px); filter: blur(3px); }
+}
+@keyframes backdropIn  { from { opacity: 0; } }
+@keyframes backdropOut { 0%, 30% { opacity: 1; } 100% { opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-dialog, .contact-dialog::backdrop, .contact-dialog::after,
+  .contact-dialog .contact-photo, .contact-dialog .contact-details > * { animation: none !important; }
 }
 
 @keyframes photoScan {
