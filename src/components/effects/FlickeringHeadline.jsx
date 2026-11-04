@@ -1,6 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; 
+const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+// How many characters ahead of the resolved text may show scramble noise.
+// Everything beyond the window stays blank, so junk never fills the line.
+const SCRAMBLE_WINDOW = 3;
 
 const FlickeringHeadline = ({
   phrases,
@@ -24,6 +28,7 @@ const FlickeringHeadline = ({
           .split("")
           .map((_, index) => {
             if (index < iteration) return text[index];
+            if (text[index] === " " || index >= iteration + SCRAMBLE_WINDOW) return " ";
             return characters[Math.floor(Math.random() * characters.length)];
           })
           .join("")
@@ -51,7 +56,8 @@ const FlickeringHeadline = ({
     };
   }, [currentIndex]);
 
-  return <span className={className}>{displayText}</span>;
+  // whitespace-pre keeps the blank tail in place, so the line never reflows mid-scramble
+  return <span className={`${className} md:whitespace-pre`}>{displayText}</span>;
 };
 
 export default FlickeringHeadline;
