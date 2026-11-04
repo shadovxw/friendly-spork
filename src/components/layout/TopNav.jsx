@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useSystem } from '../../hooks/useSystem';
 import HackerText from '../effects/HackerText';
 import ContactModal from '../ui/ContactModal';
@@ -14,6 +14,8 @@ const TopNav = ({ show = true }) => {
   const [mobileHover, setMobileHover] = useState(''); // Tracking hover specifically for mobile
 
   const { playHover, playClick } = useSystem();
+  const navigate = useNavigate();
+  const location = useLocation();
   const navLinks = ['Projects', 'Stack', 'Experience', 'About'];
 
   useEffect(() => {
@@ -53,6 +55,11 @@ const TopNav = ({ show = true }) => {
     e.preventDefault();
     playClick();
     setIsMenuOpen(false);
+    // Off the landing page (e.g. /projects) the sections don't exist: go home to that section.
+    if (location.pathname !== '/') {
+      navigate(`/#${id}`);
+      return;
+    }
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
   };
 

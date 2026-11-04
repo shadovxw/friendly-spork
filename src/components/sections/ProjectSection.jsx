@@ -1,5 +1,8 @@
 import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { withViewTransition } from '../../utils/viewTransition';
 import HoloCard from '../ui/HoloCard';
+import BlurReveal from '../effects/BlurReveal';
 import { useSystem } from '../../hooks/useSystem';
 import { Github, ExternalLink, ArrowRight, LayoutGrid, Cloud, AudioLines, Hand, MessageSquare } from 'lucide-react';
 
@@ -81,12 +84,13 @@ const ProjectVisual = ({ proj, className = '' }) => {
 
 const ProjectSection = () => {
   const { playClick } = useSystem();
+  const navigate = useNavigate();
 
   return (
     <section id="projects" className="relative w-full min-h-screen py-32 px-6 md:px-20 bg-[#0b0a0d] z-10">
 
       {/* Section Header */}
-      <div className="mb-20">
+      <BlurReveal className="mb-20" blur={4} y={16} duration={0.7}>
         <div className="flex items-center gap-4 mb-4">
           <h2 className="text-sm font-bold tracking-[0.5em] text-cyan-400 uppercase">Archives</h2>
           <div className="h-[1px] w-12 bg-cyan-900" />
@@ -97,7 +101,7 @@ const ProjectSection = () => {
         <h3 className="text-5xl md:text-8xl font-black text-white uppercase tracking-tighter">
           Selected <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-purple-600">Works</span>
         </h3>
-      </div>
+      </BlurReveal>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
 
@@ -106,11 +110,18 @@ const ProjectSection = () => {
           const featured = index === 0;
 
           return (
-            <HoloCard
+            <BlurReveal
               key={proj.title}
+              className={`h-full ${featured ? 'md:col-span-3' : ''}`}
+              delay={featured ? 0.1 : 0.15 + index * 0.07}
+              blur={4}
+              y={16}
+              duration={0.7}
+            >
+            <HoloCard
               glow
               maxTilt={featured ? 2 : 4}
-              className={`w-full bg-neutral-900/40 rounded-xl overflow-hidden group border border-white/5 transition-colors duration-500 hover:bg-neutral-900/80 ${featured ? 'md:col-span-3' : ''}`}
+              className="w-full h-full bg-neutral-900/40 rounded-xl overflow-hidden group border border-white/5 transition-colors duration-500 hover:bg-neutral-900/80"
             >
               <article className={`flex h-full flex-col ${featured ? 'md:flex-row' : ''}`}>
                 <ProjectVisual
@@ -166,11 +177,12 @@ const ProjectSection = () => {
                 </div>
               </article>
             </HoloCard>
+            </BlurReveal>
           );
         })}
 
         {/* --- CTA CARDS --- */}
-        <div className="md:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <BlurReveal className="md:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8" delay={0.3} blur={4} y={16} duration={0.7}>
 
           {/* --- CARD 5: GITHUB CTA --- */}
           <HoloCard className="w-full bg-gradient-to-br from-cyan-900/10 to-blue-900/10 rounded-xl overflow-hidden group border border-cyan-500/20 flex items-center justify-center transition-all hover:border-cyan-500/50">
@@ -195,9 +207,17 @@ const ProjectSection = () => {
 
           {/* --- CARD 6: ARCHIVE CTA --- */}
           <HoloCard className="w-full bg-gradient-to-br from-purple-900/10 to-fuchsia-900/10 rounded-xl overflow-hidden group border border-purple-500/20 flex items-center justify-center transition-all hover:border-purple-500/50">
-            <a
-              href="/projects"
-              onClick={() => playClick()}
+            <Link
+              to="/projects"
+              onClick={(e) => {
+                playClick();
+                // remembered so "Return to base" can put the visitor back where they were
+                sessionStorage.setItem('landingScroll', String(Math.round(window.scrollY)));
+                // plain left-click: animate the route change; modified clicks keep default behaviour
+                if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+                e.preventDefault();
+                withViewTransition(() => navigate('/projects'));
+              }}
               className="w-full h-full p-10 flex flex-col items-center justify-center text-center space-y-6 min-h-[300px]"
             >
               {/* Purple Icon Container */}
@@ -213,10 +233,10 @@ const ProjectSection = () => {
               <div className="flex items-center gap-2 text-purple-400 text-[10px] font-bold uppercase tracking-[0.3em] group-hover:gap-4 transition-all">
                 Open Database <ArrowRight size={14} />
               </div>
-            </a>
+            </Link>
           </HoloCard>
 
-        </div>
+        </BlurReveal>
       </div>
     </section>
   );

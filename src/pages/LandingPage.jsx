@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import React, { useState, useEffect, useLayoutEffect, useRef, useCallback } from 'react';
+import { useOutletContext, useLocation, useNavigationType } from 'react-router-dom';
 import TopNav from '../components/layout/TopNav';
 import ProjectSection from '../components/sections/ProjectSection';
 import ExperienceSection from '../components/sections/ExperienceSection';
@@ -17,8 +17,25 @@ const LandingPage = () => {
   const { enableIntro } = useOutletContext();
   const [showLandingContent, setShowLandingContent] = useState(!enableIntro);
   const [introFinished, setIntroFinished] = useState(!enableIntro);
+  const location = useLocation();
+  const navType = useNavigationType();
   const heroRef = useRef(null);
   const [glitch, setGlitch] = useState(false);
+
+  // Coming back from /projects: go back Back -> restore the saved scroll position;
+  // arriving via /#section -> scroll to that section.
+  // (layout effect, so the position is right in the first painted frame, even mid view-transition)
+  useLayoutEffect(() => {
+    const saved = sessionStorage.getItem('landingScroll');
+    if (navType === 'POP' && saved !== null) {
+      sessionStorage.removeItem('landingScroll');
+      window.scrollTo({ top: Number(saved), behavior: 'instant' });
+    } else if (location.hash) {
+      document.getElementById(location.hash.slice(1))?.scrollIntoView({ behavior: 'instant' });
+    }
+    // mount only: in-page #links keep their native smooth scroll
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const glitchTimer = useRef(0);
   const lastFaceGlitch = useRef(0);
 
