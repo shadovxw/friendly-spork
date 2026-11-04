@@ -1,17 +1,9 @@
 import React from 'react';
 import HoloCard from '../ui/HoloCard';
 import { useSystem } from '../../hooks/useSystem';
-import { Github, ExternalLink, ArrowRight, LayoutGrid } from 'lucide-react'; // Added LayoutGrid
+import { Github, ExternalLink, ArrowRight, LayoutGrid, Cloud, AudioLines, Hand, MessageSquare } from 'lucide-react';
 
 const projects = [
-  // {
-  //   title: "SHADOVXW_CLOUD",
-  //   category: "DevOps & Cloud Infrastructure",
-  //   desc: "Converted a legacy laptop into a production-grade Kubernetes cluster using MicroK8s and Ubuntu Server. Implemented Zero Trust architecture via Cloudflare Tunnels and configured Nginx Ingress for secure, multi-subdomain routing.",
-  //   tech: ["MicroK8s", "Ubuntu", "Cloudflare", "Docker", "Nginx"],
-  //   github: "https://github.com/shadovxw",
-  //   website: "https://console.shadovxw.me"
-  // },
   {
     title: "SHADOVXW_CLOUD",
     category: "DevOps & Cloud Infrastructure",
@@ -20,15 +12,6 @@ const projects = [
     github: "https://github.com/shadovxw",
     website: "https://console.shadovxw.me"
   },
-
-  // {
-  //   title: "ECHO",
-  //   category: "Robotics & Embedded Systems",
-  //   desc: "A Pixhawk-based quadrotor drone designed, assembled, and flight-tested from scratch with stable manual flight, real-time telemetry, and ongoing vision-based autonomy work using a companion computer.",
-  //   tech: ["Pixhawk", "ArduPilot", "Raspberry Pi", "Python", "C++"],
-  //   github: "https://github.com/shadovxw",
-  //   website: "#"
-  // },
   {
     title: "Echo",
     category: "Full-Stack AI Application",
@@ -55,8 +38,49 @@ const projects = [
   }
 ];
 
+// Placeholder artwork per project until real screenshots or clips exist.
+// Add `image: someImport` to a project above to show that instead.
+const GRID = 'linear-gradient(rgb(255 255 255 / 0.06) 1px, transparent 1px), linear-gradient(90deg, rgb(255 255 255 / 0.06) 1px, transparent 1px)';
+const VISUALS = {
+  SHADOVXW_CLOUD: { icon: Cloud, gradient: 'from-cyan-500/30 via-blue-700/20', pattern: GRID, size: '24px 24px' },
+  Echo: { icon: AudioLines, gradient: 'from-blue-500/30 via-sky-700/20', pattern: 'repeating-linear-gradient(90deg, rgb(255 255 255 / 0.12) 0 3px, transparent 3px 9px)', size: 'auto' },
+  'WAVE DRIVE': { icon: Hand, gradient: 'from-emerald-500/25 via-cyan-700/20', pattern: 'radial-gradient(rgb(255 255 255 / 0.2) 1px, transparent 1px)', size: '14px 14px' },
+  BLABLAVERSE: { icon: MessageSquare, gradient: 'from-sky-500/30 via-cyan-700/20', pattern: 'repeating-linear-gradient(45deg, rgb(255 255 255 / 0.06) 0 1px, transparent 1px 10px)', size: 'auto' },
+};
+
+const FADE_MASK = 'radial-gradient(ellipse at center, #000 30%, transparent 85%)';
+
+const ProjectVisual = ({ proj, className = '' }) => {
+  const v = VISUALS[proj.title] || VISUALS.SHADOVXW_CLOUD;
+  const Icon = v.icon;
+
+  return (
+    <div className={`relative overflow-hidden bg-neutral-950 ${className}`} aria-hidden="true">
+      {proj.image ? (
+        <img src={proj.image} alt="" className="absolute inset-0 h-full w-full object-cover" />
+      ) : (
+        <>
+          <div className={`absolute inset-0 bg-gradient-to-br ${v.gradient} to-transparent`} />
+          <div
+            className="absolute inset-0"
+            style={{ backgroundImage: v.pattern, backgroundSize: v.size, maskImage: FADE_MASK, WebkitMaskImage: FADE_MASK }}
+          />
+          <Icon
+            size={72}
+            strokeWidth={1.25}
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-white/70 transition-transform duration-500 group-hover:scale-110"
+          />
+        </>
+      )}
+      <span className="absolute bottom-3 left-4 font-mono text-[10px] uppercase tracking-[0.2em] text-white/50">
+        {proj.tech.slice(0, 3).join(' · ')}
+      </span>
+    </div>
+  );
+};
+
 const ProjectSection = () => {
-  const { playClick, playHover } = useSystem();
+  const { playClick } = useSystem();
 
   return (
     <section id="projects" className="relative w-full min-h-screen py-32 px-6 md:px-20 bg-black z-10">
@@ -75,111 +99,124 @@ const ProjectSection = () => {
         </h3>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
 
-        {/* --- MAIN PROJECTS LOOP --- */}
-        {projects.map((proj, index) => (
-          <HoloCard
-            key={index}
-            className="w-full bg-neutral-900/40 rounded-xl overflow-hidden group border border-white/5 transition-all duration-700 ease-in-out hover:bg-neutral-900/80 h-auto md:h-full"
-          >
-            <div
-              onMouseEnter={() => playHover()}
-              className="relative block p-8 md:p-10 flex flex-col h-full min-h-auto md:min-h-[300px] md:group-hover:min-h-[550px] transition-all duration-700 ease-in-out"
+        {/* --- PROJECTS: first one is the full-width feature card --- */}
+        {projects.map((proj, index) => {
+          const featured = index === 0;
+
+          return (
+            <HoloCard
+              key={proj.title}
+              glow
+              maxTilt={featured ? 2 : 4}
+              className={`w-full bg-neutral-900/40 rounded-xl overflow-hidden group border border-white/5 transition-colors duration-500 hover:bg-neutral-900/80 ${featured ? 'md:col-span-3' : ''}`}
             >
-              {/* Header */}
-              <div className="flex justify-between items-start mb-8">
-                <span className="text-[10px] font-mono text-cyan-500/80 tracking-widest uppercase py-1 border-b border-cyan-500/30">
-                  [{index + 1}] // {proj.category}
-                </span>
-                <div className="shrink-0 w-10 h-10 rounded-full border border-white/10 flex items-center justify-center bg-cyan-500 text-black md:bg-transparent md:text-white md:group-hover:bg-cyan-500 md:group-hover:text-black transition-all duration-500">
-                  <ArrowRight size={18} className="rotate-0 md:-rotate-45 transition-transform md:group-hover:rotate-0" />
-                </div>
-              </div>
+              <article className={`flex h-full flex-col ${featured ? 'md:flex-row' : ''}`}>
+                <ProjectVisual
+                  proj={proj}
+                  className={featured ? 'h-44 md:h-auto md:w-2/5 md:min-h-[340px]' : 'h-40'}
+                />
 
-              <h4 className="text-2xl sm:text-3xl lg:text-5xl font-black text-cyan-400 md:text-white md:group-hover:text-cyan-400 transition-all duration-500 tracking-tighter uppercase mb-4">
-                {proj.title}
-              </h4>
+                <div className={`flex flex-1 flex-col p-6 ${featured ? 'md:p-10' : 'md:p-7'}`}>
+                  {/* Header */}
+                  <div className="flex items-start justify-between gap-4 mb-5">
+                    <span className="text-[10px] font-mono text-cyan-500/80 tracking-widest uppercase py-1 border-b border-cyan-500/30">
+                      [{index + 1}] // {proj.category}
+                    </span>
+                    <div className="shrink-0 w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white transition-all duration-500 group-hover:bg-cyan-500 group-hover:text-black group-hover:border-cyan-500">
+                      <ArrowRight size={18} className="-rotate-45 transition-transform duration-500 group-hover:rotate-0" />
+                    </div>
+                  </div>
 
-              {/* Expanded Content Wrapper */}
-              <div className="max-h-full opacity-100 md:max-h-0 md:opacity-0 md:group-hover:max-h-[450px] md:group-hover:opacity-100 transition-all duration-700 ease-in-out overflow-hidden">
-                <div className="pt-6 mt-6 border-t border-white/10 space-y-6">
-                  <p className="text-gray-400 leading-relaxed text-sm md:text-base font-medium">
+                  {featured && (
+                    <span className="mb-3 self-start rounded-full border border-cyan-500/30 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.25em] text-cyan-400">
+                      Featured
+                    </span>
+                  )}
+
+                  <h4 className={`font-black uppercase tracking-tighter text-white transition-colors duration-500 group-hover:text-cyan-400 mb-4 ${featured ? 'text-3xl lg:text-5xl' : 'text-2xl lg:text-3xl'}`}>
+                    {proj.title}
+                  </h4>
+
+                  <p className="text-gray-400 leading-relaxed text-sm md:text-base mb-5">
                     {proj.desc}
                   </p>
 
-                  <div className="flex flex-wrap gap-4">
-                    {proj.github !== "#" && (
-                      <a href={proj.github} target="_blank" rel="noopener noreferrer" onClick={(e) => { e.stopPropagation(); playClick(); }} className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-xs font-bold uppercase tracking-wider text-white hover:bg-white hover:text-black transition-all">
-                        <Github size={14} /> GitHub
-                      </a>
-                    )}
-                    {proj.website !== "#" && (
-                      <a href={proj.website} target="_blank" rel="noopener noreferrer" onClick={(e) => { e.stopPropagation(); playClick(); }} className="flex items-center gap-2 px-4 py-2 bg-cyan-500/10 border border-cyan-500/20 rounded-lg text-xs font-bold uppercase tracking-wider text-cyan-400 hover:bg-cyan-500 hover:text-white transition-all">
-                        <ExternalLink size={14} /> Live Demo
-                      </a>
-                    )}
-                  </div>
-
-                  <div className="flex flex-wrap gap-x-4 gap-y-2">
+                  <div className="flex flex-wrap gap-x-4 gap-y-2 mb-6">
                     {proj.tech.map(t => (
-                      <span key={t} className="text-[10px] font-bold uppercase tracking-[0.2em] text-cyan-200 md:text-neutral-600 md:group-hover:text-cyan-200 transition-colors">
+                      <span key={t} className="text-[10px] font-bold uppercase tracking-[0.2em] text-cyan-200/80">
                         #{t}
                       </span>
                     ))}
                   </div>
+
+                  <div className="mt-auto flex flex-wrap gap-3">
+                    {proj.github !== "#" && (
+                      <a href={proj.github} target="_blank" rel="noopener noreferrer" onClick={() => playClick()} className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-xs font-bold uppercase tracking-wider text-white hover:bg-white hover:text-black transition-all">
+                        <Github size={14} /> GitHub
+                      </a>
+                    )}
+                    {proj.website !== "#" && (
+                      <a href={proj.website} target="_blank" rel="noopener noreferrer" onClick={() => playClick()} className="flex items-center gap-2 px-4 py-2 bg-cyan-500/10 border border-cyan-500/20 rounded-lg text-xs font-bold uppercase tracking-wider text-cyan-400 hover:bg-cyan-500 hover:text-white transition-all">
+                        <ExternalLink size={14} /> Live Demo
+                      </a>
+                    )}
+                  </div>
                 </div>
+              </article>
+            </HoloCard>
+          );
+        })}
+
+        {/* --- CTA CARDS --- */}
+        <div className="md:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+
+          {/* --- CARD 5: GITHUB CTA --- */}
+          <HoloCard className="w-full bg-gradient-to-br from-cyan-900/10 to-blue-900/10 rounded-xl overflow-hidden group border border-cyan-500/20 flex items-center justify-center transition-all hover:border-cyan-500/50">
+            <a
+              href="https://github.com/shadovxw"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => playClick()}
+              className="w-full h-full p-10 flex flex-col items-center justify-center text-center space-y-6 min-h-[300px]"
+            >
+              <div className="p-4 bg-cyan-500/10 rounded-full text-cyan-400 group-hover:scale-110 group-hover:bg-cyan-500 group-hover:text-black transition-all duration-500">
+                <Github size={40} />
               </div>
-            </div>
+              <div className="space-y-2">
+                <h4 className="text-xl font-black text-white uppercase tracking-widest">Git Repos</h4>
+                <p className="text-gray-400 text-[11px] font-mono tracking-tighter max-w-[220px]">
+                  Access the source code for all experimental builds.
+                </p>
+              </div>
+            </a>
           </HoloCard>
-        ))}
 
-        {/* --- CARD 5: GITHUB CTA --- */}
-        <HoloCard className="w-full bg-gradient-to-br from-cyan-900/10 to-blue-900/10 rounded-xl overflow-hidden group border border-cyan-500/20 flex items-center justify-center transition-all hover:border-cyan-500/50">
-          <a
-            href="https://github.com/shadovxw"
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => playClick()}
-            onMouseEnter={() => playHover()}
-            className="w-full h-full p-10 flex flex-col items-center justify-center text-center space-y-6 min-h-[300px]"
-          >
-            <div className="p-4 bg-cyan-500/10 rounded-full text-cyan-400 group-hover:scale-110 group-hover:bg-cyan-500 group-hover:text-black transition-all duration-500">
-              <Github size={40} />
-            </div>
-            <div className="space-y-2">
-              <h4 className="text-xl font-black text-white uppercase tracking-widest">Git Repos</h4>
-              <p className="text-gray-400 text-[11px] font-mono tracking-tighter max-w-[220px]">
-                Access the source code for all experimental builds.
-              </p>
-            </div>
-          </a>
-        </HoloCard>
+          {/* --- CARD 6: ARCHIVE CTA --- */}
+          <HoloCard className="w-full bg-gradient-to-br from-purple-900/10 to-fuchsia-900/10 rounded-xl overflow-hidden group border border-purple-500/20 flex items-center justify-center transition-all hover:border-purple-500/50">
+            <a
+              href="/projects"
+              onClick={() => playClick()}
+              className="w-full h-full p-10 flex flex-col items-center justify-center text-center space-y-6 min-h-[300px]"
+            >
+              {/* Purple Icon Container */}
+              <div className="p-4 bg-purple-500/10 rounded-full text-purple-400 group-hover:scale-110 group-hover:bg-purple-500 group-hover:text-white transition-all duration-500">
+                <LayoutGrid size={40} />
+              </div>
+              <div className="space-y-2">
+                <h4 className="text-xl font-black text-white uppercase tracking-widest">Full Archive</h4>
+                <p className="text-gray-400 text-[11px] font-mono tracking-tighter max-w-[220px]">
+                  View the complete database of projects, videos, and galleries.
+                </p>
+              </div>
+              <div className="flex items-center gap-2 text-purple-400 text-[10px] font-bold uppercase tracking-[0.3em] group-hover:gap-4 transition-all">
+                Open Database <ArrowRight size={14} />
+              </div>
+            </a>
+          </HoloCard>
 
-        {/* --- CARD 6: ARCHIVE CTA (NEW) --- */}
-        <HoloCard className="w-full bg-gradient-to-br from-purple-900/10 to-fuchsia-900/10 rounded-xl overflow-hidden group border border-purple-500/20 flex items-center justify-center transition-all hover:border-purple-500/50">
-          <a
-            href="/projects"
-            onClick={(e) => { e.stopPropagation(); playClick(); }}
-            onMouseEnter={() => playHover()}
-            className="w-full h-full p-10 flex flex-col items-center justify-center text-center space-y-6 min-h-[300px]"
-          >
-            {/* Purple Icon Container */}
-            <div className="p-4 bg-purple-500/10 rounded-full text-purple-400 group-hover:scale-110 group-hover:bg-purple-500 group-hover:text-white transition-all duration-500">
-              <LayoutGrid size={40} />
-            </div>
-            <div className="space-y-2">
-              <h4 className="text-xl font-black text-white uppercase tracking-widest">Full Archive</h4>
-              <p className="text-gray-400 text-[11px] font-mono tracking-tighter max-w-[220px]">
-                View the complete database of projects, videos, and galleries.
-              </p>
-            </div>
-            <div className="flex items-center gap-2 text-purple-400 text-[10px] font-bold uppercase tracking-[0.3em] group-hover:gap-4 transition-all">
-              Open Database <ArrowRight size={14} />
-            </div>
-          </a>
-        </HoloCard>
-
+        </div>
       </div>
     </section>
   );
