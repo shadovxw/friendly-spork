@@ -5,6 +5,7 @@ import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion
 
 // Lazy-loaded: PulsingCore pulls in three.js + @react-three/fiber/drei.
 // It lives below the fold, so we keep that weight off the initial bundle.
+// The chrome knot. A particle-cloud portrait is also available: swap this import for '../effects/ParticlePortrait'.
 const PulsingCore = lazy(() => import('../effects/PulsingCore'));
 
 const PERSONNEL_LABEL = "The Profile";
