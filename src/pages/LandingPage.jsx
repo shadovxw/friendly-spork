@@ -84,10 +84,10 @@ const LandingPage = () => {
         {/* Main Hero Content (z-20) 
             LAYOUT FIX: Changed to 'items-start' (Left Align) to balance the face on the right.
         */}
-        <div className={`relative z-20 h-full w-full flex flex-col justify-end items-start px-8 pb-12 md:px-16 lg:px-24 md:pb-48 transition-all duration-1000 ${showLandingContent ? 'opacity-100' : 'opacity-0'}`}>
+        <div className={`relative z-20 h-full w-full flex flex-col justify-end items-start px-8 pb-12 md:px-16 lg:px-24 md:justify-center md:pt-32 md:pb-56 transition-all duration-1000 ${showLandingContent ? 'opacity-100' : 'opacity-0'}`}>
 
           <main className="max-w-4xl text-left">
-            <p className={`text-sm md:text-base text-cyan-400 font-bold mb-3 tracking-[0.2em] uppercase transition-all duration-1000 delay-500 ${showLandingContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+            <p className={`text-[11px] md:text-xs text-cyan-400 font-bold mb-4 tracking-[0.35em] uppercase transition-all duration-1000 delay-500 ${showLandingContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
               Software Engineer · Systems & Infrastructure
             </p>
 
@@ -107,7 +107,7 @@ const LandingPage = () => {
             </div>
 
             <p className={`text-xs md:text-sm text-gray-300 mb-8 max-w-xl leading-relaxed transition-opacity duration-1000 delay-700 ${showLandingContent ? 'opacity-100' : 'opacity-0'}`}>
-              Early-career engineer focused on fundamentals, real systems, and long-term mastery.
+              Backend &amp; DevOps intern at Citius Cloud Services in 2025: Kubernetes and OpenShift deployments, CI/CD pipelines, ELK logging and Vault-managed secrets.
             </p>
 
             {/* Calls to action */}

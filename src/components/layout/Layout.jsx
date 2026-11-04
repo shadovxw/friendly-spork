@@ -5,8 +5,10 @@ import GlitchIntro from '../system/preloaders/GlitchIntro';
 const SEEN_KEY = 'introSeen';
 
 // The intro plays once per session, and never for reduced-motion visitors.
+// Adding ?intro to the URL always forces it, so it can be tested on demand.
 const shouldSkipIntro = () => {
   try {
+    if (new URLSearchParams(window.location.search).has('intro')) return false;
     return (
       window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
       sessionStorage.getItem(SEEN_KEY) === '1'

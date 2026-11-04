@@ -30,7 +30,7 @@ const SystemMonitor = () => {
   }, []);
 
   return (
-    <div className="fixed bottom-8 left-8 z-40 hidden md:flex flex-col gap-2 font-mono text-[10px] uppercase tracking-widest pointer-events-none select-none mix-blend-difference">
+    <div className="fixed bottom-20 left-8 z-40 hidden md:flex flex-col gap-2 font-mono text-[10px] uppercase tracking-widest pointer-events-none select-none mix-blend-difference opacity-60 [@media(max-height:700px)]:hidden">
       
       {/* HEADER */}
       <div className="flex items-center gap-2 text-gray-500 mb-1">

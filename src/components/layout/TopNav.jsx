@@ -206,7 +206,7 @@ const TopNav = ({ show = true }) => {
                 href={`#${id}`}
                 onClick={(e) => handleNavClick(e, id)}
                 onMouseEnter={() => playHover()}
-                className={`px-4 lg:px-6 py-2.5 lg:py-3 text-xs lg:text-sm font-bold uppercase tracking-widest rounded-full transition-colors ${isActive ? 'text-white bg-white/10' : 'text-gray-400 hover:text-white'}`}
+                className={`px-4 lg:px-6 py-2.5 lg:py-3 text-xs lg:text-sm font-bold uppercase tracking-widest rounded-full transition-colors ${isActive ? 'text-cyan-400 bg-white/10' : 'text-gray-400 hover:text-white'}`}
               >
                 <HackerText label={item} />
               </a>
