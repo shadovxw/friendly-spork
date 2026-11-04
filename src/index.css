@@ -413,3 +413,14 @@ html {
   from { opacity: 0; }
   to { opacity: 1; }
 }
+
+/* --- CONTACT MODAL --- */
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes photoScan {
+  from { transform: translateY(-100%); opacity: 1; }
+  to { transform: translateY(300%); opacity: 0; }
+}
