@@ -13,7 +13,11 @@ const IntroShell = ({ complete, onComplete, holdMs = 300, children }) => {
 
   useEffect(() => {
     if (!complete) return;
-    const lift = setTimeout(() => setLeaving(true), holdMs);
+    const lift = setTimeout(() => {
+      setLeaving(true);
+      // the swarm rebuild's intro mode starts here, while the panel is still covering the page
+      window.dispatchEvent(new CustomEvent('intro-leaving'));
+    }, holdMs);
     const done = setTimeout(() => onCompleteRef.current(), holdMs + LIFT_MS + 100);
     return () => {
       clearTimeout(lift);
@@ -23,6 +27,7 @@ const IntroShell = ({ complete, onComplete, holdMs = 300, children }) => {
 
   return (
     <div
+      data-swarm-skip
       className={`fixed inset-0 z-[250] bg-[#0a0a0a] text-white font-mono transition-transform duration-700 ease-in-out will-change-transform ${leaving ? '-translate-y-full' : 'translate-y-0'}`}
     >
       {/* scanlines + vignette, same as the old terminal */}

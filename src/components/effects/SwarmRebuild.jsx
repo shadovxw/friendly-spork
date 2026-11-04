@@ -12,9 +12,14 @@ import { shouldAutoRebuild, markAutoRebuild } from '../../utils/swarmOnce';
 //  - Only what is on screen gets built. Tour mode scrolls the page for you; scrolling by hand works too.
 //  - Nothing is cloned or changed permanently: exiting removes every attribute and inline effect it added.
 
-// Flip to true to play the fast version (first screen only, about 2s) once a day on a first visit. Off until it is decided
-// whether it replaces the glitch preloader. /?rebuild=fast plays it on demand.
+// Two ways to run it:
+//  - Manual (Ctrl K -> Rebuild, Alt+Shift+S): the full, watchable version at normal speed, with the control bar.
+//  - Intro: plays once, right after the glitch preloader (which itself plays once per session), the whole page at high
+//    speed and over in about 10 seconds. Any click, key or scroll finishes it instantly.
+// Also available: /?rebuild=fast (first screen only, ~2s) and the once-a-day rule in swarmOnce.js, both unused by default.
+const INTRO_AFTER_PRELOADER = true;
 const AUTO_ON_FIRST_VISIT = false;
+const INTRO_OPTS = { tour: true, speed: 8, fast: true, ui: 'skip', startAgents: 20, maxAgents: 20, tourStep: 1, tourEvery: 160, hold: 700, scope: 'page', maxDuration: 12000, returnToTop: true };
 
 const AGENT_COLORS = ['#a78bfa', '#f472b6', '#34d399', '#fbbf24', '#60a5fa', '#fb7185', '#22d3ee', '#c084fc', '#f97316', '#84cc16'];
 const MAX_AGENTS = 20;
@@ -128,7 +133,7 @@ const createEngine = ({ opts, onStats, onStatus }) => {
   };
 
   const spawn = (onScreen = false) => {
-    if (!alive || status !== 'running' || agents.length >= MAX_AGENTS) return;
+    if (!alive || status !== 'running' || agents.length >= (opts.maxAgents ?? MAX_AGENTS)) return;
     agents.push(makeAgent(agents.length, onScreen));
     peakAgents = Math.max(peakAgents, agents.length);
     stats();
@@ -293,7 +298,7 @@ const createEngine = ({ opts, onStats, onStatus }) => {
     // the first screen (name and tagline) gets a moment on its own before the tour moves on
     if (!heroHeld && sy < 10) {
       const busy = agents.some((a) => a.layer) || layers.some((l) => !l.done && !l.claimed && l.vis && (!l.parent || l.parent.done));
-      if (!busy) { heroHeld = true; manualUntil = performance.now() + 1300; return; }
+      if (!busy) { heroHeld = true; manualUntil = performance.now() + (opts.hold ?? 1300); return; }
     }
 
     const claimed = agents.some((a) => a.layer);
@@ -309,7 +314,7 @@ const createEngine = ({ opts, onStats, onStatus }) => {
       if (stuck.count > 1) { revealAll(); finish(); return; }
       scrollToY(clamp(remaining.el.getBoundingClientRect().top + sy - innerHeight * 0.3, 0, max));
     } else {
-      scrollToY(Math.min(sy + innerHeight * 0.6, max));
+      scrollToY(Math.min(sy + innerHeight * (opts.tourStep ?? 0.6), max));
     }
   };
 
@@ -332,6 +337,8 @@ const createEngine = ({ opts, onStats, onStatus }) => {
   const goLive = () => {
     if (!alive || status === 'live') return;
     revealAll();
+    // the intro tours the whole page, so the visitor must land back on the hero
+    if (opts.returnToTop) scrollToY(0, true);
     status = 'live';
     const secs = Math.round((performance.now() - startedAt) / 1000);
     took = `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}`;
@@ -386,7 +393,7 @@ const createEngine = ({ opts, onStats, onStatus }) => {
   window.addEventListener('touchstart', onManual, { passive: true });
 
   timers.push(setInterval(refreshVisible, 140));
-  timers.push(setInterval(tourTick, 350));
+  timers.push(setInterval(tourTick, opts.tourEvery ?? 350));
   // more agents join as the build goes on
   timers.push(setInterval(() => spawn(), 700));
   timers.push(setInterval(stats, 250));
@@ -430,19 +437,19 @@ const SwarmRebuild = () => {
     setStatus('idle');
   }, []);
 
-  const [fast, setFast] = useState(false);
+  const [ui, setUi] = useState('full'); // full | skip | none
 
   const startFast = useCallback(() => {
     if (engine.current || !supported()) return;
-    opts.current = { tour: false, speed: 4, fast: true, startAgents: 20, scope: 'viewport', maxDuration: 2200 };
-    setFast(true);
+    opts.current = { tour: false, speed: 4, fast: true, ui: 'none', startAgents: 20, scope: 'viewport', maxDuration: 2200 };
+    setUi('none');
     markAutoRebuild(); // a refresh mid-run must not replay it
     engine.current = createEngine({ opts: opts.current, onStats: setStats, onStatus: setStatus });
   }, []);
 
   const start = useCallback(() => {
     if (engine.current || !supported()) return;
-    setFast(false);
+    setUi('full');
     opts.current = { tour: true, speed: 1 };
     setTour(true);
     setSpeed(1);
@@ -450,8 +457,18 @@ const SwarmRebuild = () => {
     engine.current = createEngine({ opts: opts.current, onStats: setStats, onStatus: setStatus });
   }, []);
 
+  const startIntro = useCallback(() => {
+    if (engine.current || !supported()) return;
+    opts.current = { ...INTRO_OPTS };
+    setUi('skip');
+    setStats({ agents: 0, done: 0, total: 0 });
+    engine.current = createEngine({ opts: opts.current, onStats: setStats, onStatus: setStatus });
+  }, []);
+
   useEffect(() => {
     const onStart = () => start();
+    const onIntro = () => { if (INTRO_AFTER_PRELOADER) startIntro(); };
+    window.addEventListener('intro-leaving', onIntro);
     const onKey = (e) => {
       if (e.altKey && e.shiftKey && e.code === 'KeyS') { e.preventDefault(); engine.current ? exit() : start(); }
       else if (e.key === 'Escape' && engine.current) exit();
@@ -466,16 +483,34 @@ const SwarmRebuild = () => {
     else if (AUTO_ON_FIRST_VISIT && shouldAutoRebuild()) auto = setTimeout(startFast, 600);
     return () => {
       clearTimeout(auto);
+      window.removeEventListener('intro-leaving', onIntro);
       window.removeEventListener('start-rebuild', onStart);
       window.removeEventListener('keydown', onKey);
       engine.current?.exit();
       engine.current = null;
     };
-  }, [start, startFast, exit]);
+  }, [start, startFast, startIntro, exit]);
 
-  if (status === 'idle' || fast) return null;
+  if (status === 'idle' || ui === 'none') return null;
 
   const pct = stats.total ? Math.round((stats.done / stats.total) * 100) : 0;
+
+  if (ui === 'skip') {
+    // intro mode: just a progress hint and a way out
+    if (status === 'live') return null;
+    return createPortal(
+      <button
+        type="button"
+        data-swarm-ui=""
+        onClick={() => engine.current?.goLive()}
+        className="fixed bottom-6 left-1/2 z-[9999] flex -translate-x-1/2 items-center gap-3 rounded-full border border-white/15 bg-black/70 px-4 py-2 font-mono text-[11px] uppercase tracking-widest text-gray-300 backdrop-blur-xl hover:border-purple-400/60"
+      >
+        <span>Building · {pct}%</span>
+        <span className="text-gray-500">click to skip</span>
+      </button>,
+      document.body
+    );
+  }
   const btn = 'rounded-full border border-white/15 px-3 py-1 text-[11px] uppercase tracking-wider transition-colors hover:border-purple-400/70 hover:text-white';
 
   return createPortal(
