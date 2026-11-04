@@ -225,7 +225,7 @@ const LandingPage = () => {
         {/* Main Hero Content (z-20) 
             LAYOUT FIX: Changed to 'items-start' (Left Align) to balance the face on the right.
         */}
-        <div className={`relative z-20 h-full w-full flex flex-col justify-end items-start px-8 pb-12 md:px-16 lg:px-24 md:justify-center md:pt-32 md:pb-56 transition-all duration-1000 ${showLandingContent ? 'opacity-100' : 'opacity-0'}`}>
+        <div className={`relative z-20 h-full w-full flex flex-col justify-end items-start px-8 pb-12 md:px-16 lg:px-24 md:justify-center md:pt-32 md:pb-12 transition-all duration-1000 ${showLandingContent ? 'opacity-100' : 'opacity-0'}`}>
 
           <main className="max-w-6xl text-left">
             <p className={`text-[11px] md:text-xs text-cyan-400 font-bold mb-4 tracking-[0.35em] uppercase transition-all duration-1000 delay-500 ${showLandingContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
