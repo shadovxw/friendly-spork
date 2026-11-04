@@ -160,6 +160,7 @@ const HorizontalCardsSection = () => {
   const snapsRef = useRef([0]); // sideways distance (px) at which each card sits on the page margin
   const maxRef = useRef(0);
   const [sectionHeight, setSectionHeight] = useState(null);
+  const [tail, setTail] = useState(0); // px of empty space under the cards to pull the next section up over
   const [pin, setPin] = useState('top'); // 'top' (before), 'fixed' (pinned), 'bottom' (after)
   const reduced = useReducedMotion();
 
@@ -173,6 +174,9 @@ const HorizontalCardsSection = () => {
       snapsRef.current = cardRefs.current.map((el) => clamp((el?.getBoundingClientRect().left ?? 0) - first, 0, max));
       // getBoundingClientRect includes the current translate for every card equally, so the differences are stable
       setSectionHeight(max + window.innerHeight);
+      // the pinned screen centres the cards, leaving empty space below them once the pin ends: let the Contact section's
+      // bridge start about 80px under the cards instead
+      setTail(Math.max((window.innerHeight - track.offsetHeight) / 2 - 80, 0));
     };
 
     let raf = 0;
@@ -222,7 +226,7 @@ const HorizontalCardsSection = () => {
         : { position: 'absolute', top: 0, left: 0, width: '100%', height: '100vh' };
 
   return (
-    <section ref={sectionRef} className="relative w-full bg-[#0b0a0d]" style={{ height: sectionHeight ?? '200vh' }}>
+    <section ref={sectionRef} className="relative w-full bg-[#0b0a0d]" style={{ height: sectionHeight ?? '200vh', marginBottom: -tail }}>
       <div style={containerStyle} className="z-10 flex items-center overflow-hidden">
         {/* pl: card 1 lines up with the page margin. pr: the last card can come to rest near the middle of the screen. */}
         <div ref={trackRef} className="flex items-stretch gap-4 pl-6 pr-[20vw] will-change-transform md:gap-12 md:pl-20">

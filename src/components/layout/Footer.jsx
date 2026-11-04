@@ -1,12 +1,37 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
+import { Github, Linkedin, Mail, Check } from 'lucide-react';
 import ConstellationCanvas from '../effects/ConstellationCanvas';
-import MagneticButton from '../ui/MagneticButton';
 import ContactForm from '../ui/ContactForm';
 import { useSystem } from '../../hooks/useSystem';
+import resumeFile from '../../assets/resume.pdf';
+
+// Headline lines rise out of a mask, one after the other. The in-view trigger sits on the (unclipped) <h2>:
+// an element whose own clip-path hides it entirely never counts as intersecting, so it could not trigger itself.
+const headline = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.12 } },
+};
+const headlineLine = {
+  hidden: { clipPath: 'inset(100% 0 0 0)', y: 40 },
+  show: { clipPath: 'inset(0% 0 0 0)', y: 0, transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] } },
+};
+
+// Same fade as the stars: transparent at the top edge, solid from 35% down.
+const STAR_MASK = 'linear-gradient(to bottom, transparent, #000 35%)';
+
+const contactInfo = {
+  email: "vrishank.w02@gmail.com",
+  linkedin: "https://www.linkedin.com/in/vrishank-warrier-ab529628a/",
+  github: "https://github.com/shadovxw" // Preserved from your previous project data
+};
+
+const COMMAND_CHIPS = ['projects', 'resume', 'status', 'contact', 'help'];
 
 const Footer = () => {
   const { playHover, playClick } = useSystem();
   const [input, setInput] = useState('');
+  const [copied, setCopied] = useState(false);
   const [history, setHistory] = useState([
     { type: 'system', text: 'CONNECTION_ESTABLISHED // NODE_ID: 0x82FA' },
     { type: 'system', text: 'TYPE "HELP" TO VIEW AVAILABLE COMMANDS.' }
@@ -15,17 +40,9 @@ const Footer = () => {
 
   const currentYear = new Date().getFullYear();
 
-  // Updated Contact Details
-  const contactInfo = {
-    email: "vrishank.w02@gmail.com",
-    linkedin: "https://www.linkedin.com/in/vrishank-warrier-ab529628a/",
-    github: "https://github.com/shadovxw" // Preserved from your previous project data
-  };
-
   const socialLinks = [
-    { name: 'GitHub', url: contactInfo.github },
-    { name: 'LinkedIn', url: contactInfo.linkedin },
-    // { name: 'Twitter', url: '#' }
+    { name: 'GitHub', url: contactInfo.github, Icon: Github },
+    { name: 'LinkedIn', url: contactInfo.linkedin, Icon: Linkedin },
   ];
 
   // Command Logic with Updated Info
@@ -41,80 +58,118 @@ const Footer = () => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [history]);
 
+  const runCommand = (raw) => {
+    const cmd = raw.toLowerCase().trim();
+    if (cmd === '') return;
+    const next = [...history, { type: 'user', text: `> ${cmd}` }];
+
+    if (cmd === 'clear') {
+      setHistory([]);
+    } else if (commands[cmd]) {
+      next.push({ type: 'output', text: commands[cmd] });
+      setHistory(next);
+      if (cmd === 'projects') document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
+      if (cmd === 'resume') {
+        const a = document.createElement('a');
+        a.href = resumeFile;
+        a.download = 'Vrishank_Warrier_Resume.pdf';
+        a.click();
+      }
+    } else {
+      next.push({ type: 'error', text: `ERR: COMMAND_NOT_FOUND: ${cmd}` });
+      setHistory(next);
+    }
+    playClick();
+  };
+
   const handleCommand = (e) => {
     if (e.key === 'Enter') {
-      const cmd = input.toLowerCase().trim();
-      const newHistory = [...history, { type: 'user', text: `> ${cmd}` }];
-
-      if (cmd === 'clear') {
-        setHistory([]);
-      } else if (commands[cmd]) {
-        newHistory.push({ type: 'output', text: commands[cmd] });
-        setHistory(newHistory);
-        if (cmd === 'projects') document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
-      } else if (cmd !== "") {
-        newHistory.push({ type: 'error', text: `ERR: COMMAND_NOT_FOUND: ${cmd}` });
-        setHistory(newHistory);
-      }
+      runCommand(input);
       setInput('');
-      playClick();
     }
   };
 
-  return (
-    <footer id="footer" className="relative w-full min-h-screen bg-black text-white flex flex-col justify-between overflow-hidden border-t border-white/10">
+  // The form reports back here so the terminal can log it.
+  const handleSent = () => {
+    setHistory((h) => [...h, { type: 'output', text: '> message_sent // ack 200' }]);
+  };
 
-      {/* 1. NEURAL BACKGROUND & OVERLAY */}
-      <div className="absolute inset-0 z-0">
+  const copyEmail = async () => {
+    playClick();
+    try {
+      await navigator.clipboard.writeText(contactInfo.email);
+    } catch {
+      const t = document.createElement('textarea');
+      t.value = contactInfo.email;
+      document.body.appendChild(t);
+      t.select();
+      document.execCommand('copy');
+      t.remove();
+    }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1800);
+  };
+
+  const chipClass =
+    'inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.03] px-4 py-2 font-mono text-[11px] uppercase tracking-[0.15em] text-gray-300 transition-colors hover:border-cyan-500/60 hover:text-cyan-300 focus-visible:border-cyan-500/60 focus-visible:text-cyan-300 outline-none';
+
+  return (
+    // pt-32 keeps the heading clear of the fixed nav when you reach the very bottom
+    <footer id="footer" className="relative w-full min-h-screen bg-black text-white flex flex-col justify-between overflow-hidden pt-32">
+
+      {/* 1. NEURAL BACKGROUND: the stars fade in from the top instead of starting at a hard line */}
+      <div className="absolute inset-0 z-0" style={{ maskImage: STAR_MASK, WebkitMaskImage: STAR_MASK }}>
         <ConstellationCanvas />
-        <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black/90 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/90 pointer-events-none" />
       </div>
 
+      {/* bridge: the About section's colour melting into black */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-56 bg-gradient-to-b from-[#0b0a0d] to-transparent" />
+
       {/* 2. MAIN CALL TO ACTION (CENTERED) */}
-      <div className="relative z-10 flex-grow flex flex-col justify-center items-center text-center px-4 pt-20">
+      <div className="relative z-10 flex-grow flex flex-col justify-center items-center text-center px-4">
         <p className="text-cyan-500 font-mono text-[10px] tracking-[0.5em] uppercase mb-6 animate-pulse">
           Transmission End // Initialize Connection
         </p>
 
-        {/* FIXED: text-4xl for mobile, sm:text-6xl for tablet, md:text-9xl for desktop */}
-        <h2 className="text-4xl sm:text-6xl md:text-9xl font-black tracking-tighter mb-12 mix-blend-difference">
-          LET'S <br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-cyan-400 to-gray-500 transition-all duration-700">
-            COLLABORATE
-          </span>
-        </h2>
+        <motion.h2
+          className="text-4xl sm:text-6xl md:text-9xl font-black tracking-tighter mb-12"
+          variants={headline}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.3 }}
+        >
+          <motion.div variants={headlineLine}>LET'S</motion.div>
+          <motion.div variants={headlineLine} className="collab-gradient">COLLABORATE</motion.div>
+        </motion.h2>
 
-        <div className="flex flex-col md:flex-row gap-8 items-center justify-center">
-          {/* <MagneticButton
-            href={`mailto:${contactInfo.email}`}
-            className="px-10 py-4 bg-white text-black font-black uppercase tracking-widest text-xs rounded-full hover:bg-cyan-400 transition-all duration-300"
-          >
-            Start a Project
-          </MagneticButton> */}
-
-          <div className="flex gap-8">
-            {socialLinks.map((social) => (
-              <a
-                key={social.name}
-                href={social.url}
-                target={social.url !== '#' ? "_blank" : "_self"}
-                rel="noopener noreferrer"
-                onClick={() => playClick()}
-                onMouseEnter={() => playHover()}
-                className="text-gray-500 hover:text-white uppercase text-[10px] font-bold tracking-[0.2em] border-b border-transparent hover:border-cyan-500 transition-all pb-1"
-              >
-                {social.name}
-              </a>
-            ))}
-          </div>
+        {/* links as chips: the most-clicked things in this section */}
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          {socialLinks.map(({ name, url, Icon }) => (
+            <a
+              key={name}
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => playClick()}
+              onMouseEnter={() => playHover()}
+              className={chipClass}
+            >
+              <Icon size={14} aria-hidden="true" /> {name}
+            </a>
+          ))}
+          <button type="button" onClick={copyEmail} onMouseEnter={() => playHover()} className={chipClass} aria-label={`Copy email address ${contactInfo.email}`}>
+            {copied ? <Check size={14} aria-hidden="true" /> : <Mail size={14} aria-hidden="true" />}
+            {copied ? 'Copied' : contactInfo.email}
+          </button>
         </div>
 
         {/* Functional contact form */}
-        <ContactForm />
+        <ContactForm onSent={handleSent} fallbackEmail={contactInfo.email} />
       </div>
 
       {/* 3. INTEGRATED SYSTEM TERMINAL (BOTTOM) */}
-      <div className="relative z-20 w-full max-w-5xl mx-auto px-6 pb-12">
+      <div className="relative z-20 w-full max-w-2xl mx-auto px-6 pb-12">
         <div className="bg-neutral-900/80 backdrop-blur-xl border border-white/10 rounded-xl overflow-hidden shadow-[0_-20px_50px_rgba(0,0,0,0.5)]">
           {/* Terminal Top Bar */}
           <div className="bg-neutral-800/50 px-4 py-2 flex items-center justify-between border-b border-white/5">
@@ -130,13 +185,28 @@ const Footer = () => {
 
           {/* Output Scroll Area */}
           <div ref={scrollRef} className="h-32 overflow-y-auto p-4 font-mono text-[11px] leading-relaxed space-y-1 scrollbar-hide">
-            {history.map((line, i) => (
-              <div key={i} className={`${line.type === 'user' ? 'text-white font-bold' :
-                  line.type === 'error' ? 'text-red-500' :
+            {history.map((l, i) => (
+              <div key={i} className={`${l.type === 'user' ? 'text-white font-bold' :
+                  l.type === 'error' ? 'text-red-500' :
                     'text-cyan-400/70'
                 }`}>
-                {line.text}
+                {l.text}
               </div>
+            ))}
+          </div>
+
+          {/* Command chips: shows it's interactive without typing "help" */}
+          <div className="flex flex-wrap gap-2 px-4 pb-3">
+            {COMMAND_CHIPS.map((c) => (
+              <button
+                key={c}
+                type="button"
+                onClick={() => runCommand(c)}
+                onMouseEnter={() => playHover()}
+                className="rounded border border-white/10 px-2 py-1 font-mono text-[10px] uppercase tracking-widest text-cyan-300/80 transition-colors hover:border-cyan-500/60 hover:text-cyan-200 focus-visible:border-cyan-500/60 outline-none"
+              >
+                {c}
+              </button>
             ))}
           </div>
 
@@ -149,6 +219,7 @@ const Footer = () => {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleCommand}
               placeholder="ENTER_COMMAND_TO_EXECUTE..."
+              aria-label="Terminal command"
               className="bg-transparent border-none outline-none text-white text-[11px] font-mono w-full placeholder:text-neutral-700"
             />
           </div>
