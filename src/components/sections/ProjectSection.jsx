@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { withViewTransition } from '../../utils/viewTransition';
 import HoloCard from '../ui/HoloCard';
@@ -82,9 +82,20 @@ const ProjectVisual = ({ proj, className = '' }) => {
   );
 };
 
+// Anchor id for a project card (the Stack section links to these).
+export const projectAnchor = (title) => `project-${title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+
 const ProjectSection = () => {
   const { playClick } = useSystem();
   const navigate = useNavigate();
+  // tags lit up while a Stack item is hovered
+  const [litTags, setLitTags] = useState([]);
+
+  useEffect(() => {
+    const onHighlight = (e) => setLitTags(e.detail || []);
+    window.addEventListener('stack-highlight', onHighlight);
+    return () => window.removeEventListener('stack-highlight', onHighlight);
+  }, []);
 
   return (
     <section id="projects" className="relative w-full py-24 px-6 md:px-20 bg-[#0b0a0d] z-10">
@@ -123,7 +134,7 @@ const ProjectSection = () => {
               maxTilt={featured ? 2 : 4}
               className="w-full h-full bg-neutral-900/40 rounded-xl overflow-hidden group border border-white/5 transition-colors duration-500 hover:bg-neutral-900/80"
             >
-              <article className={`flex h-full flex-col ${featured ? 'md:flex-row' : ''}`}>
+              <article id={projectAnchor(proj.title)} className={`flex h-full scroll-mt-32 flex-col ${featured ? 'md:flex-row' : ''}`}>
                 <ProjectVisual
                   proj={proj}
                   className={featured ? 'h-44 md:h-auto md:w-2/5 md:min-h-[340px]' : 'h-40'}
@@ -156,7 +167,7 @@ const ProjectSection = () => {
 
                   <div className="flex flex-wrap gap-x-4 gap-y-2 mb-6">
                     {proj.tech.map(t => (
-                      <span key={t} className="text-[10px] font-bold uppercase tracking-[0.2em] text-cyan-200/80">
+                      <span key={t} className={`text-[10px] font-bold uppercase tracking-[0.2em] transition-colors duration-200 ${litTags.includes(t) ? 'text-white underline decoration-cyan-400 underline-offset-4' : 'text-cyan-200/80'}`}>
                         #{t}
                       </span>
                     ))}

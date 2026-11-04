@@ -1,8 +1,9 @@
-import React, { useRef } from 'react';
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import React, { useEffect, useRef, useState } from 'react';
+import { motion, useInView, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { Box } from 'lucide-react';
 import BlurReveal from '../effects/BlurReveal';
 import STACK_ICONS from './stackIcons';
-import { projects } from './ProjectSection';
+import { projects, projectAnchor } from './ProjectSection';
 
 // `match` lists the project tags (see ProjectSection) that mean "this skill was used there".
 // Infrastructure leads and is the widest card.
@@ -14,11 +15,7 @@ const STACK_DATA = [
       { name: "Docker", match: ["Docker"] },
       { name: "Kubernetes", match: [] },
       { name: "OpenShift", match: [] },
-      { name: "CI/CD", match: [] },
       { name: "Ansible", match: [] },
-      { name: "Terraform", match: [] },
-      { name: "ELK Stack", match: [] },
-      { name: "HashiCorp Vault", match: [] },
       { name: "Linux (Ubuntu)", match: ["Ubuntu Server"] },
     ]
   },
@@ -49,13 +46,40 @@ const MODULE_COUNT = STACK_DATA.reduce((n, g) => n + g.skills.length, 0);
 
 // Projects whose tech tags include any of the skill's aliases.
 const projectsUsing = (skill) =>
-  projects.filter((p) => p.tech.some((t) => skill.match.includes(t))).map((p) => p.title);
+  projects.filter((p) => p.tech.some((t) => skill.match.includes(t)));
+
+// Tells the Projects section which #tags to light up (empty array clears it).
+const highlightTags = (tags) => window.dispatchEvent(new CustomEvent('stack-highlight', { detail: tags }));
+
+const goToProject = (e, title) => {
+  e.preventDefault();
+  document.getElementById(projectAnchor(title))?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+};
+
+// MODULES: counts up once when the header scrolls into view, like the rows printing.
+const CountUp = ({ to }) => {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true });
+  const [n, setN] = useState(0);
+  useEffect(() => {
+    if (!inView) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { setN(to); return; }
+    let i = 0;
+    const id = setInterval(() => {
+      i += 1;
+      setN(i);
+      if (i >= to) clearInterval(id);
+    }, 60);
+    return () => clearInterval(id);
+  }, [inView, to]);
+  return <span ref={ref}>{n.toString().padStart(2, '0')}</span>;
+};
 
 const SkillIcon = ({ name }) => {
   const icon = STACK_ICONS[name];
   if (!icon) {
-    // no brand mark (CI/CD, Spline): a terminal-style marker keeps the rows aligned
-    return <span aria-hidden="true" className="w-7 shrink-0 text-center font-mono text-lg text-white/30 transition-colors group-hover/skill:text-cyan-400">&gt;_</span>;
+    // no brand mark (Spline): a neutral 3D cube keeps the rows aligned
+    return <Box aria-hidden="true" strokeWidth={1.5} className="h-6 w-6 shrink-0 text-white/35 transition-colors duration-300 group-hover/skill:text-cyan-400" />;
   }
   return (
     <svg
@@ -114,11 +138,11 @@ const TiltCard = ({ group, delay }) => {
       }}
       className="relative h-full p-8 rounded-2xl bg-white/[0.03] border border-white/10 transition-colors duration-500 hover:bg-white/[0.06] hover:border-cyan-500/30 shadow-2xl shadow-cyan-500/10"
     >
-      <div style={{ transform: "translateZ(50px)" }} className="relative">
-        <h3 className="text-xs tracking-[0.3em] uppercase font-bold text-cyan-400 mb-8">
+      <div style={{ transform: "translateZ(50px)" }} className="relative flex h-full flex-col">
+        <h3 className="text-xs tracking-[0.3em] uppercase font-bold text-cyan-400 mb-12">
           // {group.category}
         </h3>
-        <ul className={`gap-x-8 gap-y-4 ${group.featured ? 'grid sm:grid-cols-2 lg:grid-cols-3' : 'space-y-4'}`}>
+        <ul className={`flex flex-1 gap-4 ${group.featured ? 'flex-row flex-wrap gap-x-12 gap-y-5' : 'flex-col justify-between'}`}>
           {group.skills.map((skill, i) => {
             const usedIn = projectsUsing(skill);
             return (
@@ -129,14 +153,31 @@ const TiltCard = ({ group, delay }) => {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: delay + i * 0.03, duration: 0.35 }}
-                tabIndex={usedIn.length ? 0 : undefined}
-                className="group/skill relative flex items-center gap-3 text-xl lg:text-2xl font-bold text-white/80 transition-colors hover:text-cyan-400 focus-visible:text-cyan-400 outline-none cursor-default"
+                tabIndex={0}
+                onMouseEnter={() => usedIn.length && highlightTags(skill.match)}
+                onMouseLeave={() => highlightTags([])}
+                onFocus={() => usedIn.length && highlightTags(skill.match)}
+                onBlur={() => highlightTags([])}
+                className="group/skill relative flex items-center gap-3 text-xl lg:text-2xl font-bold text-white/80 transition-colors hover:z-30 focus-within:z-30 hover:text-cyan-400 focus-visible:text-cyan-400 outline-none cursor-default"
               >
                 <SkillIcon name={skill.name} />
                 <span>{skill.name}</span>
                 {usedIn.length > 0 && (
-                  <span className="absolute left-9 top-full z-10 mt-1 whitespace-nowrap font-mono text-[10px] font-normal uppercase tracking-[0.2em] text-white/70 opacity-0 transition-opacity duration-200 group-hover/skill:opacity-100 group-focus-visible/skill:opacity-100">
-                    used in → {usedIn.join(', ')}
+                  // floats above the row (pb bridges the gap so the pointer can reach the links)
+                  <span className="invisible absolute bottom-full left-0 z-30 pb-2 opacity-0 transition-[opacity,visibility] duration-200 group-hover/skill:visible group-hover/skill:opacity-100 group-focus-within/skill:visible group-focus-within/skill:opacity-100">
+                    <span className="flex items-center gap-2 whitespace-nowrap rounded-md border border-cyan-500/30 bg-[#0b0a0d] px-3 py-1.5 font-mono text-[10px] font-normal uppercase tracking-[0.2em] text-white/70 shadow-lg shadow-black/50">
+                      used in →
+                      {usedIn.map((proj) => (
+                        <a
+                          key={proj.title}
+                          href={`#${projectAnchor(proj.title)}`}
+                          onClick={(e) => goToProject(e, proj.title)}
+                          className="text-cyan-400 underline-offset-4 hover:underline focus-visible:underline outline-none"
+                        >
+                          {proj.title}
+                        </a>
+                      ))}
+                    </span>
                   </span>
                 )}
               </motion.li>
@@ -151,9 +192,7 @@ const TiltCard = ({ group, delay }) => {
 const StackPage = () => {
   return (
     <section
-      className="text-white px-6 md:px-12 lg:px-24 py-24 overflow-hidden"
-      // soft tint that fades into the shared page colour, so the section edges don't read as hard seams
-      style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 0%, rgb(255 255 255 / 0.035), transparent 70%), #0b0a0d' }}
+      className="bg-[#0b0a0d] text-white px-6 md:px-12 lg:px-24 py-24 overflow-hidden"
     >
       {/* Header Section (same shape as Projects) */}
       <BlurReveal className="mb-16" blur={4} y={16} duration={0.7}>
@@ -161,7 +200,7 @@ const StackPage = () => {
           <h2 className="text-sm font-bold tracking-[0.5em] text-cyan-400 uppercase">Toolchain</h2>
           <div className="h-[1px] w-12 bg-cyan-900" />
           <span className="text-[10px] font-mono text-cyan-500/50">
-            MODULES: {MODULE_COUNT.toString().padStart(2, '0')}
+            MODULES: <CountUp to={MODULE_COUNT} />
           </span>
         </div>
         <h3 className="text-5xl md:text-8xl font-black text-white uppercase tracking-tighter">
