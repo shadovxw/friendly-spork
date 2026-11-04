@@ -1,12 +1,25 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom'; // Assuming you use React Router
+import { useNavigate, useLocation } from 'react-router-dom'; // Assuming you use React Router
 import { ArrowLeft, Hammer, Terminal, Cpu } from 'lucide-react';
+import TopNav from '../components/layout/TopNav';
+import { withViewTransition } from '../utils/viewTransition';
 
 const ConstructionPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Came from elsewhere on the site: step back (keeps history clean, no Back loop).
+  // Landed here directly (no entry to go back to): replace this entry with the Projects section.
+  const returnToBase = () => {
+    withViewTransition(() => {
+      if (location.key !== 'default') navigate(-1);
+      else navigate('/#projects', { replace: true });
+    }, 'back');
+  };
 
   return (
     <div className="relative w-full h-screen bg-black overflow-hidden flex flex-col items-center justify-center p-6 text-center">
+      <TopNav />
       
       {/* BACKGROUND ELEMENTS (Decorative) */}
       <div className="absolute inset-0 pointer-events-none opacity-20">
@@ -21,7 +34,7 @@ const ConstructionPage = () => {
       </div>
 
       {/* MAIN CONTENT CARD */}
-      <div className="relative z-10 max-w-2xl w-full bg-neutral-900/50 border border-white/10 backdrop-blur-sm p-12 rounded-2xl flex flex-col items-center shadow-2xl shadow-cyan-900/20">
+      <div className="construction-panel relative z-10 max-w-2xl w-full bg-neutral-900/50 border border-white/10 backdrop-blur-sm p-12 rounded-2xl flex flex-col items-center shadow-2xl shadow-cyan-900/20">
         
         {/* Animated Icon */}
         <div className="relative mb-8">
@@ -53,7 +66,7 @@ const ConstructionPage = () => {
 
         {/* Action Button */}
         <button 
-            onClick={() => navigate('/')} // Or window.location.href = '/' if not using Router
+            onClick={returnToBase}
             className="group relative px-8 py-3 bg-white text-black font-bold uppercase tracking-widest text-xs hover:bg-cyan-400 transition-all duration-300 flex items-center gap-2"
         >
             <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />

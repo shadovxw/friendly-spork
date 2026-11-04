@@ -1,13 +1,35 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { Home, FolderGit2, Layers, Briefcase, User, Mail, FileText, Github, Linkedin, Copy, Archive, Send, Check, Sparkles } from 'lucide-react';
 import resumeFile from '../../assets/resume.pdf';
+import { withViewTransition } from '../../utils/viewTransition';
+import { modKeyLabel } from '../../utils/platform';
 
+const EMAIL = 'vrishank.w02@gmail.com';
+
+// Palette and nav sit above the site's colour overlay, so they show true colours: purple here, not cyan.
 const CommandPalette = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [copied, setCopied] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const lastFocus = useRef(null); // what had focus before opening, so Esc can hand it back
+  const listRef = useRef(null);
+  const mod = useMemo(modKeyLabel, []);
+
+  const open = () => {
+    lastFocus.current = document.activeElement;
+    setQuery("");
+    setSelectedIndex(0);
+    setIsOpen(true);
+  };
+  const close = () => {
+    setIsOpen(false);
+    // after the palette unmounts, put keyboard users back where they were
+    setTimeout(() => lastFocus.current?.focus?.(), 0);
+  };
 
   // Scroll to a section, navigating home first if we're on another route.
   const goToSection = (id) => {
@@ -19,6 +41,11 @@ const CommandPalette = () => {
     }
   };
 
+  const goToTop = () => {
+    if (location.pathname !== '/') navigate('/');
+    else window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const downloadResume = () => {
     const a = document.createElement('a');
     a.href = resumeFile;
@@ -28,89 +55,158 @@ const CommandPalette = () => {
     a.remove();
   };
 
-  // Define the available commands
+  const copyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText(EMAIL);
+    } catch {
+      const t = document.createElement('textarea');
+      t.value = EMAIL;
+      document.body.appendChild(t);
+      t.select();
+      document.execCommand('copy');
+      t.remove();
+    }
+    setCopied(true);
+    setTimeout(() => { setCopied(false); close(); }, 900);
+  };
+
+  const openArchive = () => {
+    if (location.pathname === '/projects') return;
+    sessionStorage.setItem('landingScroll', String(Math.round(window.scrollY)));
+    withViewTransition(() => navigate('/projects'));
+  };
+
+  // label = the nav's word; hint = the playful version; keywords feed search; keys = "G then ..." shortcut.
   const commands = [
-    { id: 'home', label: 'Go Home', icon: '🏠', action: () => navigate('/') },
-    { id: 'projects', label: 'View Projects', icon: '⚡', action: () => goToSection('projects') },
-    { id: 'stack', label: 'View Stack', icon: '🧱', action: () => goToSection('stack') },
-    { id: 'experience', label: 'View Experience', icon: '📈', action: () => goToSection('experience') },
-    { id: 'about', label: 'Read Philosophy', icon: '🧠', action: () => goToSection('about') },
-    // Fixed: open the contact modal via a custom event (the old class selector matched nothing and threw).
-    { id: 'contact', label: 'Send Signal', icon: '📡', action: () => window.dispatchEvent(new CustomEvent('open-contact')) },
-    { id: 'resume', label: 'Download Resume', icon: '📄', action: downloadResume },
-    // Fixed: point at the actual profiles instead of the generic homepages.
-    { id: 'github', label: 'Open GitHub', icon: '🐙', action: () => window.open('https://github.com/shadovxw', '_blank', 'noopener') },
-    { id: 'linkedin', label: 'Connect on LinkedIn', icon: '💼', action: () => window.open('https://www.linkedin.com/in/vrishank-warrier-ab529628a/', '_blank', 'noopener') },
+    { id: 'home', label: 'Home', hint: 'back to the top', Icon: Home, keys: 'H', keywords: 'top start landing hero', action: goToTop },
+    { id: 'projects', label: 'Projects', hint: 'selected works', Icon: FolderGit2, keys: 'P', keywords: 'work portfolio apps builds archives', action: () => goToSection('projects') },
+    { id: 'stack', label: 'Stack', hint: 'the toolchain', Icon: Layers, keys: 'S', keywords: 'skills tech tools k8s kubernetes docker infra languages', action: () => goToSection('stack') },
+    { id: 'experience', label: 'Experience', hint: 'the journey', Icon: Briefcase, keys: 'E', keywords: 'work job career education timeline history', action: () => goToSection('experience') },
+    { id: 'about', label: 'About', hint: 'the profile', Icon: User, keys: 'A', keywords: 'philosophy bio profile who me', action: () => goToSection('about') },
+    { id: 'contact', label: 'Contact', hint: 'send a signal', Icon: Mail, keys: 'C', keywords: 'mail email message hire reach talk', action: () => window.dispatchEvent(new CustomEvent('open-contact')) },
+    { id: 'form', label: 'Contact form', hint: 'jump to the bottom', Icon: Send, keys: 'F', keywords: 'message write footer terminal', action: () => goToSection('footer') },
+    { id: 'email', label: 'Copy email', hint: EMAIL, Icon: Copy, keywords: 'mail address clipboard', keepOpen: true, action: copyEmail },
+    { id: 'archive', label: 'Full archive', hint: 'every project', Icon: Archive, keywords: 'projects all list', action: openArchive },
+    { id: 'resume', label: 'Resume', hint: 'download the PDF', Icon: FileText, keys: 'R', keywords: 'cv download pdf', action: downloadResume },
+    { id: 'github', label: 'GitHub', hint: 'opens in a new tab', Icon: Github, keywords: 'code repos git source', action: () => window.open('https://github.com/shadovxw', '_blank', 'noopener') },
+    { id: 'linkedin', label: 'LinkedIn', hint: 'opens in a new tab', Icon: Linkedin, keywords: 'connect network social', action: () => window.open('https://www.linkedin.com/in/vrishank-warrier-ab529628a/', '_blank', 'noopener') },
   ];
 
-  // Filter commands based on search
-  const filteredCommands = commands.filter(cmd =>
-    cmd.label.toLowerCase().includes(query.toLowerCase())
+  // the swarm rebuild needs the landing page on a desktop-sized screen without reduced motion
+  if (location.pathname === '/' && window.innerWidth >= 768 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    commands.push({
+      id: 'rebuild', label: 'Rebuild', hint: 'watch a swarm of agents build this page', Icon: Sparkles,
+      keywords: 'swarm agents ai build demo watch replay animation easter egg',
+      action: () => setTimeout(() => window.dispatchEvent(new CustomEvent('start-rebuild')), 250),
+    });
+  }
+
+  // Search the label, the playful hint and the keywords
+  const q = query.toLowerCase().trim();
+  const filteredCommands = commands.filter((cmd) =>
+    !q || `${cmd.label} ${cmd.hint} ${cmd.keywords}`.toLowerCase().includes(q)
   );
 
-  // Toggle on CTRL+K or CMD+K
+  const run = (cmd) => {
+    if (!cmd) return;
+    cmd.action();
+    if (!cmd.keepOpen) close();
+  };
+
+  // Global shortcuts: Ctrl/Cmd+K toggles, Esc closes, and "g" then a letter jumps to a section.
+  const gPending = useRef(0);
   useEffect(() => {
-    const handleKeyDown = (e) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+    const onKeyDown = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
-        setIsOpen(prev => !prev);
+        if (isOpen) close(); else open();
+        return;
       }
-      if (e.key === 'Escape') {
-        setIsOpen(false);
+      if (e.key === 'Escape' && isOpen) {
+        close();
+        return;
+      }
+      if (isOpen) return;
+
+      // "g" then a letter, only when the visitor isn't typing somewhere
+      const t = e.target;
+      const typing = t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable);
+      if (typing || e.metaKey || e.ctrlKey || e.altKey) return;
+      const key = e.key.toLowerCase();
+      if (gPending.current && Date.now() - gPending.current < 1200) {
+        gPending.current = 0;
+        const cmd = commands.find((c) => c.keys && c.keys.toLowerCase() === key);
+        if (cmd) { e.preventDefault(); cmd.action(); }
+      } else if (key === 'g') {
+        gPending.current = Date.now();
       }
     };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  });
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
-
-  // Handle Arrow Keys navigation inside the menu
+  // Let other components (the top bar's hint) open the palette.
   useEffect(() => {
-    const handleNav = (e) => {
-      if (!isOpen) return;
+    const onOpen = () => open();
+    window.addEventListener('open-palette', onOpen);
+    return () => window.removeEventListener('open-palette', onOpen);
+  });
+
+  // Arrow keys / Enter inside the menu
+  useEffect(() => {
+    if (!isOpen) return;
+    const onNav = (e) => {
       if (e.key === 'ArrowDown') {
-        setSelectedIndex(prev => (prev + 1) % filteredCommands.length);
+        e.preventDefault();
+        setSelectedIndex((prev) => (prev + 1) % Math.max(filteredCommands.length, 1));
       } else if (e.key === 'ArrowUp') {
-        setSelectedIndex(prev => (prev - 1 + filteredCommands.length) % filteredCommands.length);
+        e.preventDefault();
+        setSelectedIndex((prev) => (prev - 1 + filteredCommands.length) % Math.max(filteredCommands.length, 1));
       } else if (e.key === 'Enter') {
-        filteredCommands[selectedIndex]?.action();
-        setIsOpen(false);
+        run(filteredCommands[selectedIndex]);
       }
     };
-    window.addEventListener('keydown', handleNav);
-    return () => window.removeEventListener('keydown', handleNav);
-  }, [isOpen, filteredCommands, selectedIndex]);
+    window.addEventListener('keydown', onNav);
+    return () => window.removeEventListener('keydown', onNav);
+  });
 
-  // When closed, show a subtle ⌘K hint badge (desktop only) so visitors know the palette exists.
+  // keep the highlighted row in view while arrowing through a long list
+  useEffect(() => {
+    listRef.current?.querySelector('[data-selected="true"]')?.scrollIntoView({ block: 'nearest' });
+  }, [selectedIndex, isOpen]);
+
+  // When closed, show a subtle shortcut hint badge (desktop only) so visitors know the palette exists.
   if (!isOpen) {
     return (
       <button
-        onClick={() => { setQuery(""); setSelectedIndex(0); setIsOpen(true); }}
+        onClick={open}
         aria-label="Open command palette"
-        className="hidden md:flex fixed bottom-6 left-6 z-[100] items-center gap-2 px-3 py-2 bg-black/60 backdrop-blur-md border border-white/10 rounded-lg text-[10px] font-mono uppercase tracking-widest text-gray-400 hover:text-white hover:border-cyan-500/50 transition-colors"
+        style={{ viewTransitionName: 'cmdk-hint' }}
+        className="hidden md:flex fixed bottom-6 left-6 z-[100] items-center gap-2 px-3 py-2 bg-black/60 backdrop-blur-md border border-white/10 rounded-lg text-[10px] font-mono uppercase tracking-widest text-gray-400 hover:text-white hover:border-purple-500/50 transition-colors"
       >
-        <kbd className="text-cyan-400 font-bold">⌘K</kbd>
+        <kbd className="text-purple-400 font-bold">{mod === '⌘' ? '⌘K' : `${mod} K`}</kbd>
         <span>Menu</span>
       </button>
     );
   }
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[20vh] px-4">
+    <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[20vh] px-4" role="dialog" aria-modal="true" aria-label="Command palette">
 
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsOpen(false)} />
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={close} />
 
       {/* The Palette Window */}
       <div className="relative w-full max-w-lg bg-neutral-900 border border-white/20 rounded-xl shadow-2xl overflow-hidden animate-fade-in-up">
 
         {/* Search Input */}
         <div className="flex items-center px-4 border-b border-white/10">
-          <span className="text-cyan-400 text-lg mr-3">›</span>
+          <span className="text-purple-400 text-lg mr-3">›</span>
           <input
             autoFocus
             type="text"
             placeholder="Type a command..."
+            aria-label="Search commands"
             className="w-full py-4 bg-transparent text-white outline-none placeholder-gray-500 font-mono"
             value={query}
             onChange={(e) => { setQuery(e.target.value); setSelectedIndex(0); }}
@@ -119,35 +215,49 @@ const CommandPalette = () => {
         </div>
 
         {/* Results List */}
-        <div className="max-h-[60vh] overflow-y-auto py-2">
+        <div ref={listRef} data-lenis-prevent className="max-h-[60vh] overflow-y-auto overscroll-contain py-2">
           {filteredCommands.length === 0 ? (
             <div className="p-4 text-gray-500 text-center text-sm font-mono">No commands found.</div>
           ) : (
-            filteredCommands.map((cmd, index) => (
-              <button
-                key={cmd.id}
-                onClick={() => { cmd.action(); setIsOpen(false); }}
-                onMouseEnter={() => setSelectedIndex(index)}
-                className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors duration-200
-                            ${index === selectedIndex ? 'bg-cyan-500/10 border-l-2 border-cyan-500' : 'border-l-2 border-transparent hover:bg-white/5'}
-                        `}
-              >
-                <span className="text-xl">{cmd.icon}</span>
-                <span className={`text-sm font-bold uppercase tracking-wider ${index === selectedIndex ? 'text-white' : 'text-gray-400'}`}>
-                  {cmd.label}
-                </span>
-                {index === selectedIndex && (
-                  <span className="ml-auto text-xs text-cyan-400 font-mono">↵ Enter</span>
-                )}
-              </button>
-            ))
+            filteredCommands.map((cmd, index) => {
+              const selected = index === selectedIndex;
+              const { Icon } = cmd;
+              return (
+                <button
+                  key={cmd.id}
+                  data-selected={selected}
+                  onClick={() => run(cmd)}
+                  onMouseEnter={() => setSelectedIndex(index)}
+                  className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors duration-200
+                              ${selected ? 'bg-purple-500/10 border-l-2 border-purple-500' : 'border-l-2 border-transparent hover:bg-white/5'}
+                          `}
+                >
+                  <Icon size={18} aria-hidden="true" className={selected ? 'text-purple-300' : 'text-gray-500'} />
+                  <span className="min-w-0">
+                    <span className={`block text-sm font-bold uppercase tracking-wider ${selected ? 'text-white' : 'text-gray-400'}`}>
+                      {cmd.label}
+                    </span>
+                    <span className="block truncate text-[11px] font-mono text-gray-600">{cmd.hint}</span>
+                  </span>
+                  <span className="ml-auto flex items-center gap-2">
+                    {cmd.id === 'email' && copied ? (
+                      <span className="flex items-center gap-1 text-xs font-mono text-purple-300"><Check size={12} /> Copied</span>
+                    ) : selected ? (
+                      <span className="text-xs text-purple-300 font-mono">↵ Enter</span>
+                    ) : cmd.keys ? (
+                      <span className="text-[10px] font-mono text-gray-600">G {cmd.keys}</span>
+                    ) : null}
+                  </span>
+                </button>
+              );
+            })
           )}
         </div>
 
         {/* Footer */}
         <div className="bg-black/50 px-4 py-2 border-t border-white/5 flex justify-between text-[10px] text-gray-600 uppercase tracking-widest font-bold">
-          <span>Digital Chaos OS</span>
-          <span>v2.0.26</span>
+          <span>SHADOVXW</span>
+          <span>V.2.0.BUILD</span>
         </div>
       </div>
     </div>

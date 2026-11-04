@@ -291,8 +291,8 @@ html {
   left: -50%;
   width: 200%;
   height: 200%;
-  z-index: 5;
-  /* Behind content */
+  z-index: 30;
+  /* Above page content (grain also breaks up gradient banding) but below the nav */
   pointer-events: none;
   opacity: 0.05;
   /* Adjust visibility */
@@ -395,3 +395,239 @@ html {
     animation: none !important;
   }
 }
+/* --- INTRO (glitch preloader) --- */
+@keyframes scan {
+  from { transform: translateY(-15vh); }
+  to { transform: translateY(110vh); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translate(0, 0); }
+  20% { transform: translate(-6px, 2px); }
+  40% { transform: translate(5px, -3px); }
+  60% { transform: translate(-3px, 3px); }
+  80% { transform: translate(4px, -1px); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* --- CONTACT MODAL --- */
+.contact-dialog {
+  --dx: 0px; --dy: 0px;           /* set from JS: offset to the Contact button */
+  animation: contactIn 650ms ease-out both;
+}
+.contact-dialog::backdrop {
+  background:
+    repeating-linear-gradient(to bottom, rgb(255 255 255 / 0.025) 0 1px, transparent 1px 3px),
+    radial-gradient(ellipse at center, rgb(88 28 135 / 0.28), rgb(0 0 0 / 0.92) 70%);
+  backdrop-filter: blur(12px) saturate(0.6);
+  animation: backdropIn 420ms ease-out both;
+}
+.contact-dialog[data-closing] { animation: contactOut 340ms ease-in both; }
+.contact-dialog[data-closing]::backdrop { animation: backdropOut 340ms ease-in both; }
+
+/* scanline sweep over the whole card as it powers on */
+.contact-dialog::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 10;
+  background: linear-gradient(to bottom, transparent 40%, rgb(232 121 249 / 0.18) 48%,
+              rgb(255 255 255 / 0.4) 50%, transparent 52%) no-repeat;
+  background-size: 100% 200%;
+  animation: contactSweep 650ms 280ms ease-out both;
+}
+
+/* staggered contents */
+.contact-dialog .contact-photo { animation: photoReveal 520ms 300ms cubic-bezier(0.7, 0, 0.2, 1) both; }
+.contact-dialog .contact-details > * {
+  animation: detailIn 450ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(380ms + var(--i, 0) * 60ms);
+}
+.contact-details > :nth-child(2) { --i: 1; }
+.contact-details > :nth-child(3) { --i: 2; }
+.contact-details > :nth-child(4) { --i: 3; }
+.contact-details > :nth-child(5) { --i: 4; }
+.contact-details > :nth-child(6) { --i: 5; }
+
+@keyframes contactIn {
+  0%   { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.04, 0.01); filter: brightness(4); }
+  35%  { opacity: 1; transform: scale(1, 0.006); filter: brightness(4);
+         box-shadow: 0 0 40px 6px rgb(232 121 249 / 0.6); }
+  60%  { transform: scale(1, 1.03); filter: brightness(1.6);
+         box-shadow: -6px 0 0 rgb(232 121 249 / 0.7), 6px 0 0 rgb(34 211 238 / 0.7); }
+  68%  { transform: translateX(-4px);
+         box-shadow: 4px 0 0 rgb(232 121 249 / 0.6), -4px 0 0 rgb(34 211 238 / 0.6); }
+  76%  { transform: translateX(3px); filter: brightness(1.1);
+         box-shadow: -2px 0 0 rgb(232 121 249 / 0.4), 2px 0 0 rgb(34 211 238 / 0.4); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes contactOut {
+  0%   { transform: none; }
+  15%  { transform: translateX(3px);
+         box-shadow: -4px 0 0 rgb(232 121 249 / 0.6), 4px 0 0 rgb(34 211 238 / 0.6); }
+  50%  { opacity: 1; transform: scale(1, 0.006); filter: brightness(4); }
+  80%  { opacity: 1; transform: scale(0.02, 0.006); filter: brightness(5); }
+  100% { opacity: 0; transform: scale(0); }
+}
+@keyframes contactSweep {
+  from { background-position: 0 100%; opacity: 1; }
+  to   { background-position: 0 0%;   opacity: 0; }
+}
+@keyframes photoReveal {
+  from { clip-path: inset(0 100% 0 0); filter: grayscale(1) contrast(2) brightness(2); }
+  to   { clip-path: inset(0); }
+}
+@keyframes detailIn {
+  from { opacity: 0; transform: translateY(10px); filter: blur(3px); }
+}
+@keyframes backdropIn  { from { opacity: 0; } }
+@keyframes backdropOut { 0%, 30% { opacity: 1; } 100% { opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-dialog, .contact-dialog::backdrop, .contact-dialog::after,
+  .contact-dialog .contact-photo, .contact-dialog .contact-details > * { animation: none !important; }
+}
+
+@keyframes photoScan {
+  from { transform: translateY(-100%); opacity: 1; }
+  to { transform: translateY(300%); opacity: 0; }
+}
+
+/* --- HERO PORTRAIT GLITCH --- */
+.hero-glitch { animation: heroGlitch 170ms steps(1, end) 1; }
+@keyframes heroGlitch {
+  0%   { transform: translateX(-6px); filter: url(#rgb-split) brightness(1.3); }
+  25%  { transform: translateX(5px) skewX(-1deg); filter: url(#rgb-split) contrast(1.4); }
+  50%  { transform: translateX(-3px); filter: url(#rgb-split); }
+  75%  { transform: translateX(7px) skewX(1deg); filter: url(#rgb-split) brightness(1.2); }
+  100% { transform: none; filter: none; }
+}
+.hero-glitch-band {
+  position: absolute; left: 0; right: 0; height: 7%; pointer-events: none;
+  background: rgb(255 255 255 / 0.12); mix-blend-mode: difference;
+  animation: heroBand 170ms steps(1, end) 1 both;
+}
+@keyframes heroBand {
+  0%   { top: 18%; }
+  33%  { top: 52%; }
+  66%  { top: 31%; }
+  100% { top: 74%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-glitch, .hero-glitch-band { animation: none; }
+}
+
+/* --- CARD CURSOR GLOW (HoloCard glow prop) --- */
+.holo-glow::before,
+.holo-glow::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit;
+  pointer-events: none; opacity: 0; transition: opacity 300ms;
+}
+/* gradient border that tracks the cursor */
+.holo-glow::before {
+  z-index: 30; padding: 1px;
+  background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%), rgb(34 211 238 / 0.95), transparent 65%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+/* faint fill under the cursor */
+.holo-glow::after {
+  z-index: 5;
+  background: radial-gradient(360px circle at var(--mx, 50%) var(--my, 50%), rgb(34 211 238 / 0.08), transparent 70%);
+}
+.holo-glow:hover::before,
+.holo-glow:hover::after { opacity: 1; }
+
+/* --- HERO SCROLL CUE --- */
+.scroll-cue-dot { animation: scrollCue 1.8s ease-in-out infinite; }
+@keyframes scrollCue {
+  0%   { top: 0; opacity: 0; }
+  20%  { opacity: 1; }
+  80%  { opacity: 1; }
+  100% { top: calc(100% - 6px); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scroll-cue-dot { animation: none; top: 0; }
+}
+
+/* --- ROUTE TRANSITIONS (View Transitions API; used by <Link viewTransition>) --- */
+::view-transition-old(root) { animation: vtOut 220ms ease-in both; }
+::view-transition-new(root) { animation: vtIn 380ms 120ms cubic-bezier(.16, 1, .3, 1) both; }
+
+@keyframes vtOut {
+  40%  { transform: translateX(-6px); filter: brightness(1.8) hue-rotate(40deg); }
+  100% { opacity: 0; transform: scale(.98); filter: blur(6px); }
+}
+@keyframes vtIn {
+  0%   { opacity: 0; clip-path: inset(50% 0 50% 0); filter: brightness(3); }
+  60%  { opacity: 1; clip-path: inset(0); filter: brightness(1.3); }
+  100% { filter: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+}
+
+/* Fixed UI is pinned: it keeps its own layer and is not animated with the page, so only the content changes.
+   Only the new snapshot is shown (old hidden) so semi-transparent elements don't double up. */
+::view-transition-group(site-nav),
+::view-transition-group(sys-monitor),
+::view-transition-group(cmdk-hint),
+::view-transition-group(scroll-ring),
+::view-transition-group(glow-cursor) { animation: none; }
+::view-transition-old(site-nav),
+::view-transition-old(sys-monitor),
+::view-transition-old(cmdk-hint),
+::view-transition-old(scroll-ring),
+::view-transition-old(glow-cursor) { display: none; }
+::view-transition-new(site-nav),
+::view-transition-new(sys-monitor),
+::view-transition-new(cmdk-hint),
+::view-transition-new(scroll-ring),
+::view-transition-new(glow-cursor) { animation: none; }
+
+/* Going back (Return to Base / Back): the old page collapses to a line like a CRT switching off,
+   the landing page slides in. Forward keeps the glitch-out / scan-open above. */
+html[data-nav="back"]::view-transition-old(root) { animation: vtOutBack 260ms ease-in both; }
+html[data-nav="back"]::view-transition-new(root) { animation: vtInBack 380ms 140ms cubic-bezier(.16, 1, .3, 1) both; }
+@keyframes vtOutBack {
+  0%   { transform: none; filter: none; }
+  55%  { opacity: 1; transform: scale(1, .006); filter: brightness(3); }
+  100% { opacity: 0; transform: scale(.02, .006); filter: brightness(4); }
+}
+@keyframes vtInBack {
+  0%   { opacity: 0; transform: translateX(-24px); filter: brightness(2) hue-rotate(-30deg); }
+  100% { opacity: 1; transform: none; filter: none; }
+}
+
+/* The Full Archive card grows into the construction panel (and back). One element per page holds the name. */
+.archive-card, .construction-panel { view-transition-name: archive-panel; }
+::view-transition-group(archive-panel) { animation-duration: 450ms; animation-timing-function: cubic-bezier(.16, 1, .3, 1); }
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-nav="back"]::view-transition-old(root),
+  html[data-nav="back"]::view-transition-new(root),
+  ::view-transition-group(archive-panel) { animation: none; }
+}
+
+/* Experience timeline: the rail layers dissolve over their last 220px (keep in sync with the head-dot fade in ExperienceSection) */
+.rail-fade {
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 220px), transparent);
+          mask-image: linear-gradient(to bottom, #000 calc(100% - 220px), transparent);
+}
+
+/* Contact headline: white sweeps into the site's cyan -> purple heading gradient, with no muddy grey end */
+.collab-gradient {
+  background: linear-gradient(90deg, #fff 0%, #67e8f9 30%, #06b6d4 55%, #9333ea 85%, #7c3aed 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+          background-clip: text;
+  color: transparent;
+  animation: collabSweep 1.8s 0.3s cubic-bezier(.16, 1, .3, 1) both;
+}
+@keyframes collabSweep { from { background-position: 100% 0; } to { background-position: 0 0; } }
+@media (prefers-reduced-motion: reduce) { .collab-gradient { animation: none; } }
+
+/* Swarm rebuild: pieces waiting to be built by an agent (see SwarmRebuild.jsx) */
+[data-swarm="h"] { visibility: hidden !important; }

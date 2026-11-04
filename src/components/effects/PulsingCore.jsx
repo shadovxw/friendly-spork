@@ -1,37 +1,71 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Spline from '@splinetool/react-spline';
 
-const PulsingCore = () => {
+// The object we steer. The exported scene already has a "Group" holding the knot; if you re-export with an
+// empty group named "Rig" around it, that one is preferred. The knot's own built-in animation keeps playing.
+const RIG_NAMES = ['Rig', 'Group'];
+const SCENE = 'https://prod.spline.design/6TCirOsvq3fj6lWh/scene.splinecode';
+
+export default function PulsingCore() {
   const [loading, setLoading] = useState(true);
+  const wrapRef = useRef(null);
+  const appRef = useRef(null);
+  const rigRef = useRef(null);
+
+  const onLoad = (app) => {
+    appRef.current = app;
+    rigRef.current = RIG_NAMES.map((n) => app.findObjectByName(n)).find(Boolean) || null;
+    setLoading(false);
+  };
+
+  // Stop rendering while it's off-screen
+  useEffect(() => {
+    const io = new IntersectionObserver(([e]) => {
+      const app = appRef.current;
+      if (app) e.isIntersecting ? app.play() : app.stop();
+    });
+    io.observe(wrapRef.current);
+    return () => io.disconnect();
+  }, []);
+
+  // Cursor + scroll steer the rig, eased
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    let tx = 0, ty = 0, cx = 0, cy = 0, raf;
+    const base = { x: null, y: null };
+    const onMove = (e) => {
+      tx = (e.clientY / window.innerHeight - 0.5) * 0.6;
+      ty = (e.clientX / window.innerWidth - 0.5) * 0.9;
+    };
+    const tick = () => {
+      const rig = rigRef.current;
+      if (rig) {
+        if (base.x === null) { base.x = rig.rotation.x; base.y = rig.rotation.y; }
+        cx += (tx - cx) * 0.06;
+        cy += (ty - cy) * 0.06;
+        rig.rotation.x = base.x + cx + window.scrollY * 0.0006;
+        rig.rotation.y = base.y + cy;
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    window.addEventListener('pointermove', onMove, { passive: true });
+    raf = requestAnimationFrame(tick);
+    return () => { window.removeEventListener('pointermove', onMove); cancelAnimationFrame(raf); };
+  }, []);
 
   return (
-    <div
-      className="w-full h-full relative"
-      onWheel={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-      }}
-      style={{ touchAction: 'pan-y' }}
-    >
-      {/* Loading Spinner */}
+    // pointer-events-none: the page always scrolls and the camera can never be zoomed by the wheel
+    <div ref={wrapRef} className="pointer-events-none relative h-full w-full">
       {loading && (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="w-8 h-8 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin" />
+        <div className="absolute inset-0 grid place-items-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-cyan-400 border-t-transparent" />
         </div>
       )}
+      <Spline scene={SCENE} onLoad={onLoad} className="h-full w-full" />
 
-      {/* Spline Scene */}
-      <Spline
-        scene="https://prod.spline.design/6TCirOsvq3fj6lWh/scene.splinecode"
-        onLoad={() => setLoading(false)}
-        className="w-full h-full"
-      />
-
-      {/* --- LOGO REMOVER --- */}
-      {/* A small box absolutely positioned to cover the logo in bottom-right */}
-      <div className="absolute bottom-4 right-4 w-36 h-12 bg-neutral-900 z-50 pointer-events-none" />
+      {/* Covers the Spline badge in the bottom-right corner. Same colour as the page (#0b0a0d) and feathered,
+          so it doesn't show up as a box. */}
+      <div aria-hidden="true" className="absolute bottom-4 right-4 z-50 h-12 w-36 bg-[#0b0a0d] shadow-[0_0_22px_16px_#0b0a0d]" />
     </div>
   );
-};
-
-export default PulsingCore;
+}

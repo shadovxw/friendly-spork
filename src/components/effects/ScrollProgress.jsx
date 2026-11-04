@@ -31,7 +31,8 @@ const ScrollProgress = () => {
   const strokeDashoffset = circumference - progress * circumference;
 
   return (
-    <div 
+    <div
+      style={{ viewTransitionName: 'scroll-ring' }}
       className={`fixed bottom-8 right-8 z-50 transition-all duration-500 ${progress > 0.02 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}
     >
       <button

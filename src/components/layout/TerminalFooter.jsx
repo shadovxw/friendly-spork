@@ -56,7 +56,7 @@ const TerminalFooter = () => {
         </div>
 
         {/* Output Area */}
-        <div ref={scrollRef} className="h-48 overflow-y-auto p-4 text-[12px] space-y-1 custom-scrollbar">
+        <div ref={scrollRef} data-lenis-prevent className="h-48 overflow-y-auto overscroll-contain p-4 text-[12px] space-y-1 custom-scrollbar">
           {history.map((line, i) => (
             <div key={i} className={`${
               line.type === 'user' ? 'text-white' : 

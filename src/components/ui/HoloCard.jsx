@@ -1,7 +1,9 @@
 import React, { useRef, useState } from 'react';
 import { useSystem } from '../../hooks/useSystem';
 
-const HoloCard = ({ children, className = "" }) => {
+// glow: adds a gradient border + soft fill that follow the cursor (see .holo-glow in index.css).
+// maxTilt: max rotation in degrees (text-heavy cards want a small value).
+const HoloCard = ({ children, className = "", glow = false, maxTilt = 15 }) => {
   const cardRef = useRef(null);
   const [rotation, setRotation] = useState({ x: 0, y: 0 });
   const [glarePosition, setGlarePosition] = useState({ x: 50, y: 50 });
@@ -19,10 +21,14 @@ const HoloCard = ({ children, className = "" }) => {
     const width = rect.width;
     const height = rect.height;
 
-    // Calculate Rotation (Max 15 degrees)
+    // Cursor position for the border glow, written straight to the DOM (no re-render)
+    cardRef.current.style.setProperty('--mx', `${x}px`);
+    cardRef.current.style.setProperty('--my', `${y}px`);
+
+    // Calculate Rotation (Max maxTilt degrees)
     // -y because moving mouse down should tilt card "towards" you (rotate negative X)
-    const rotateX = ((y - height / 2) / height) * -15; 
-    const rotateY = ((x - width / 2) / width) * 15;
+    const rotateX = ((y - height / 2) / height) * -maxTilt;
+    const rotateY = ((x - width / 2) / width) * maxTilt;
 
     // Calculate Glare Position (Percentage)
     const glareX = (x / width) * 100;
@@ -49,7 +55,7 @@ const HoloCard = ({ children, className = "" }) => {
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className={`relative transition-transform duration-200 ease-out will-change-transform ${className}`}
+      className={`relative transition-transform duration-200 ease-out will-change-transform ${glow ? 'holo-glow' : ''} ${className}`}
       style={{
         transformStyle: 'preserve-3d',
         transform: `

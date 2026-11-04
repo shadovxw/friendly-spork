@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-const BlurReveal = ({ children, delay = 0, className = "" }) => {
+// blur (px), y (px of rise) and duration (s) default to the original look.
+const BlurReveal = ({ children, delay = 0, className = "", blur = 10, y = 20, duration = 1 }) => {
   const ref = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -25,11 +26,12 @@ const BlurReveal = ({ children, delay = 0, className = "" }) => {
   return (
     <div
       ref={ref}
-      className={`transition-all duration-1000 ease-out ${className}`}
+      className={`transition-all ease-out ${className}`}
       style={{
         opacity: isVisible ? 1 : 0,
-        filter: isVisible ? 'blur(0px)' : 'blur(10px)',
-        transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
+        filter: isVisible ? 'blur(0px)' : `blur(${blur}px)`,
+        transform: isVisible ? 'translateY(0)' : `translateY(${y}px)`,
+        transitionDuration: `${duration}s`,
         transitionDelay: `${delay}s`
       }}
     >

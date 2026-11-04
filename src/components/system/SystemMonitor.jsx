@@ -3,6 +3,16 @@ import React, { useState, useEffect } from 'react';
 const SystemMonitor = () => {
   const [time, setTime] = useState("");
   const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [inHero, setInHero] = useState(true);
+
+  // Only show the panel over the hero; below it, it would sit on top of the section content.
+  useEffect(() => {
+    // the panel sits ~80-200px above the viewport bottom, so it leaves the hero almost immediately
+    const onScroll = () => setInHero(window.scrollY < 80);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   useEffect(() => {
     // 1. Update Time Every Second
@@ -30,7 +40,7 @@ const SystemMonitor = () => {
   }, []);
 
   return (
-    <div className="fixed bottom-8 left-8 z-40 hidden md:flex flex-col gap-2 font-mono text-[10px] uppercase tracking-widest pointer-events-none select-none mix-blend-difference">
+    <div style={{ viewTransitionName: 'sys-monitor' }} className={`fixed bottom-20 left-8 z-40 hidden md:flex flex-col gap-2 font-mono text-[10px] uppercase tracking-widest pointer-events-none select-none mix-blend-difference transition-opacity duration-500 [@media(max-height:700px)]:hidden ${inHero ? 'opacity-60' : 'opacity-0'}`}>
       
       {/* HEADER */}
       <div className="flex items-center gap-2 text-gray-500 mb-1">

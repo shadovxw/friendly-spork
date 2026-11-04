@@ -11,7 +11,12 @@ const GlowCursor = () => {
 
     // Use direct DOM manipulation for instant feedback (no React render lag)
     const updatePosition = (e) => {
-      cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+      cursor.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
+      cursor.style.opacity = '1'; // stay hidden until the pointer has actually moved
+    };
+
+    const hide = () => {
+      cursor.style.opacity = '0';
     };
 
     const updateHoverState = (e) => {
@@ -27,10 +32,12 @@ const GlowCursor = () => {
 
     window.addEventListener('mousemove', updatePosition);
     window.addEventListener('mouseover', updateHoverState);
+    document.documentElement.addEventListener('mouseleave', hide);
 
     return () => {
       window.removeEventListener('mousemove', updatePosition);
       window.removeEventListener('mouseover', updateHoverState);
+      document.documentElement.removeEventListener('mouseleave', hide);
     };
   }, []);
 
@@ -39,7 +46,10 @@ const GlowCursor = () => {
       ref={cursorRef}
       className="fixed top-0 left-0 pointer-events-none z-[9999] mix-blend-difference hidden lg:block"
       style={{
-        transform: 'translate(-100px, -100px)', // Initial off-screen position
+        transform: 'translate3d(-100px, -100px, 0)', // Initial off-screen position
+        opacity: 0,
+        willChange: 'transform',
+        viewTransitionName: 'glow-cursor', // pinned so the page transition doesn't shake the cursor
       }}
     >
       {/* 1. The Main Dot */}
