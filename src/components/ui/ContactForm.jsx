@@ -53,10 +53,10 @@ const ContactForm = ({ onSent, fallbackEmail }) => {
 
   const labelClass = 'block mb-1.5 font-mono text-[10px] uppercase tracking-[0.25em] text-gray-400';
   const inputClass =
-    'w-full bg-neutral-900/60 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder:text-neutral-600 font-mono outline-none transition focus:border-cyan-500/70 focus:ring-2 focus:ring-cyan-500/30';
+    'w-full bg-neutral-900/85 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder:text-neutral-600 font-mono outline-none transition focus:border-cyan-500/70 focus:ring-2 focus:ring-cyan-500/30';
 
   return (
-    <form onSubmit={handleSubmit} className="w-full max-w-2xl mx-auto mt-14 mb-10 text-left space-y-4">
+    <form onSubmit={handleSubmit} className="w-full max-w-2xl mx-auto mt-10 mb-8 text-left space-y-4">
       {/* Honeypot anti-spam field — bots fill it, humans never see it. */}
       <input type="checkbox" name="botcheck" tabIndex={-1} className="hidden" aria-hidden="true" />
 
@@ -73,7 +73,7 @@ const ContactForm = ({ onSent, fallbackEmail }) => {
 
       <div>
         <label htmlFor="cf-message" className={labelClass}>Message</label>
-        <textarea id="cf-message" name="message" required rows={4} placeholder="What are you building?" className={`${inputClass} resize-none`} />
+        <textarea id="cf-message" name="message" required rows={3} placeholder="What are you building?" className={`${inputClass} resize-none`} />
       </div>
 
       {/* dark with an accent border that fills on hover, so the heading stays the brightest thing here */}

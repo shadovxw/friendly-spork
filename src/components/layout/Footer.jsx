@@ -1,7 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense, lazy } from 'react';
 import { motion } from 'framer-motion';
 import { Github, Linkedin, Mail, Check } from 'lucide-react';
 import ConstellationCanvas from '../effects/ConstellationCanvas';
+
+// three.js loads only when the footer is about to be used; phones and reduced-motion visitors keep the 2D constellation
+const ConnectionField = lazy(() => import('../effects/ConnectionField'));
 import ContactForm from '../ui/ContactForm';
 import { useSystem } from '../../hooks/useSystem';
 import resumeFile from '../../assets/resume.pdf';
@@ -92,6 +95,7 @@ const Footer = () => {
   // The form reports back here so the terminal can log it.
   const handleSent = () => {
     setHistory((h) => [...h, { type: 'output', text: '> message_sent // ack 200' }]);
+    window.dispatchEvent(new CustomEvent('contact-sent')); // the background pulses once
   };
 
   const copyEmail = async () => {
@@ -119,12 +123,17 @@ const Footer = () => {
 
       {/* 1. NEURAL BACKGROUND: the stars fade in from the top instead of starting at a hard line */}
       <div className="absolute inset-0 z-0" style={{ maskImage: STAR_MASK, WebkitMaskImage: STAR_MASK }}>
-        <ConstellationCanvas />
+        <Suspense fallback={null}>
+          <ConnectionField fallback={<ConstellationCanvas />} />
+        </Suspense>
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/90 pointer-events-none" />
       </div>
 
       {/* bridge: the About section's colour melting into black */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-56 bg-gradient-to-b from-[#0b0a0d] to-transparent" />
+
+      {/* soft dark glow behind the form so the particles thin out where you type */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-[5] bg-[radial-gradient(ellipse_45%_32%_at_50%_66%,rgb(0_0_0/0.8),transparent_70%)]" />
 
       {/* 2. MAIN CALL TO ACTION (CENTERED) */}
       <div className="relative z-10 flex-grow flex flex-col justify-center items-center text-center px-4">
@@ -133,7 +142,7 @@ const Footer = () => {
         </p>
 
         <motion.h2
-          className="text-4xl sm:text-6xl md:text-9xl font-black tracking-tighter mb-12"
+          className="text-4xl sm:text-6xl md:text-9xl font-black tracking-tighter mb-8"
           variants={headline}
           initial="hidden"
           whileInView="show"
@@ -169,7 +178,7 @@ const Footer = () => {
       </div>
 
       {/* 3. INTEGRATED SYSTEM TERMINAL (BOTTOM) */}
-      <div className="relative z-20 w-full max-w-2xl mx-auto px-6 pb-12">
+      <div className="relative z-20 w-full max-w-[704px] mx-auto px-4 pb-8">
         <div className="bg-neutral-900/80 backdrop-blur-xl border border-white/10 rounded-xl overflow-hidden shadow-[0_-20px_50px_rgba(0,0,0,0.5)]">
           {/* Terminal Top Bar */}
           <div className="bg-neutral-800/50 px-4 py-2 flex items-center justify-between border-b border-white/5">
@@ -184,7 +193,7 @@ const Footer = () => {
           </div>
 
           {/* Output Scroll Area */}
-          <div ref={scrollRef} className="h-32 overflow-y-auto p-4 font-mono text-[11px] leading-relaxed space-y-1 scrollbar-hide">
+          <div ref={scrollRef} className="h-24 overflow-y-auto p-4 font-mono text-[11px] leading-relaxed space-y-1 scrollbar-hide">
             {history.map((l, i) => (
               <div key={i} className={`${l.type === 'user' ? 'text-white font-bold' :
                   l.type === 'error' ? 'text-red-500' :
@@ -234,8 +243,6 @@ const Footer = () => {
           </div>
           <span>V.2.0.BUILD</span>
         </div>
-        <br />
-        <br />
       </div>
     </footer>
   );

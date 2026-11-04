@@ -175,7 +175,7 @@ const CommandPalette = () => {
         style={{ viewTransitionName: 'cmdk-hint' }}
         className="hidden md:flex fixed bottom-6 left-6 z-[100] items-center gap-2 px-3 py-2 bg-black/60 backdrop-blur-md border border-white/10 rounded-lg text-[10px] font-mono uppercase tracking-widest text-gray-400 hover:text-white hover:border-purple-500/50 transition-colors"
       >
-        <kbd className="text-purple-400 font-bold">{mod}K</kbd>
+        <kbd className="text-purple-400 font-bold">{mod === '⌘' ? '⌘K' : `${mod} K`}</kbd>
         <span>Menu</span>
       </button>
     );
