@@ -114,6 +114,14 @@ const GlitchIntro = ({ onComplete }) => {
               <span className="tabular-nums text-fuchsia-400">{progress}%</span>
             </div>
           </div>
+
+          {/* teaser for the swarm rebuild that follows (it only runs on desktop-sized screens) */}
+          <p className="hidden md:block text-center text-xs md:text-sm uppercase tracking-[0.3em] leading-relaxed animate-[fadeIn_1.2s_0.3s_ease-out_both]">
+            <span className="text-white/60">Stay a few seconds</span>
+            <br />
+            <span className="text-cyan-300">and watch this website build itself</span>
+            <span className="animate-pulse text-cyan-300">_</span>
+          </p>
         </div>
 
         {/* hex stream */}
