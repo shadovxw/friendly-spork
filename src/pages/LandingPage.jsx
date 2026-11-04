@@ -107,7 +107,7 @@ const LandingPage = () => {
             </div>
 
             <p className={`text-xs md:text-sm text-gray-300 mb-8 max-w-xl leading-relaxed transition-opacity duration-1000 delay-700 ${showLandingContent ? 'opacity-100' : 'opacity-0'}`}>
-              Backend &amp; DevOps engineer working with Kubernetes, OpenShift, CI/CD pipelines, ELK logging and HashiCorp Vault.
+              Hands-on with Kubernetes, OpenShift, CI/CD pipelines, ELK logging and HashiCorp Vault.
             </p>
 
             {/* Calls to action */}
