@@ -49,6 +49,7 @@ const GlowCursor = () => {
         transform: 'translate3d(-100px, -100px, 0)', // Initial off-screen position
         opacity: 0,
         willChange: 'transform',
+        viewTransitionName: 'glow-cursor', // pinned so the page transition doesn't shake the cursor
       }}
     >
       {/* 1. The Main Dot */}

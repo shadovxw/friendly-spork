@@ -66,7 +66,7 @@ const TopNav = ({ show = true }) => {
 
   return (
     <>
-      <nav className={`fixed top-0 w-full p-4 sm:p-6 md:p-8 lg:p-10 z-[200] flex justify-between items-center border-b border-transparent transition-all duration-1000 ${show ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-10 pointer-events-none'
+      <nav style={{ viewTransitionName: 'site-nav' }} className={`fixed top-0 w-full p-4 sm:p-6 md:p-8 lg:p-10 z-[200] flex justify-between items-center border-b border-transparent transition-all duration-1000 ${show ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-10 pointer-events-none'
         } ${scrolled ? 'bg-black/60 backdrop-blur-md border-white/5 py-3 sm:py-3 md:py-3 lg:py-3' : ''}`}>
 
         <Link to="/" className="text-xl sm:text-2xl font-black tracking-widest text-white mix-blend-difference z-[210]">VW.</Link>

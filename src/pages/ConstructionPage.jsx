@@ -14,7 +14,7 @@ const ConstructionPage = () => {
     withViewTransition(() => {
       if (location.key !== 'default') navigate(-1);
       else navigate('/#projects', { replace: true });
-    });
+    }, 'back');
   };
 
   return (
@@ -34,7 +34,7 @@ const ConstructionPage = () => {
       </div>
 
       {/* MAIN CONTENT CARD */}
-      <div className="relative z-10 max-w-2xl w-full bg-neutral-900/50 border border-white/10 backdrop-blur-sm p-12 rounded-2xl flex flex-col items-center shadow-2xl shadow-cyan-900/20">
+      <div className="construction-panel relative z-10 max-w-2xl w-full bg-neutral-900/50 border border-white/10 backdrop-blur-sm p-12 rounded-2xl flex flex-col items-center shadow-2xl shadow-cyan-900/20">
         
         {/* Animated Icon */}
         <div className="relative mb-8">

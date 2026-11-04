@@ -21,14 +21,20 @@ const waitForPathChange = (from, timeout = 500) =>
     tick();
   });
 
-export const withViewTransition = (update) => {
+// direction: 'forward' (default) or 'back'; index.css keys the animation off <html data-nav>.
+export const withViewTransition = (update, direction = 'forward') => {
   if (!document.startViewTransition || prefersReducedMotion()) {
     update();
     return;
   }
+  const root = document.documentElement;
   const from = window.location.pathname;
-  document.startViewTransition(() => {
+  root.dataset.nav = direction;
+  const transition = document.startViewTransition(() => {
     update();
     return waitForPathChange(from);
   });
+  // finished rejects if the transition is skipped/aborted; either way, clear the marker
+  const clear = () => delete root.dataset.nav;
+  transition.finished.then(clear, clear);
 };

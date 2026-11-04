@@ -40,7 +40,7 @@ const SystemMonitor = () => {
   }, []);
 
   return (
-    <div className={`fixed bottom-20 left-8 z-40 hidden md:flex flex-col gap-2 font-mono text-[10px] uppercase tracking-widest pointer-events-none select-none mix-blend-difference transition-opacity duration-500 [@media(max-height:700px)]:hidden ${inHero ? 'opacity-60' : 'opacity-0'}`}>
+    <div style={{ viewTransitionName: 'sys-monitor' }} className={`fixed bottom-20 left-8 z-40 hidden md:flex flex-col gap-2 font-mono text-[10px] uppercase tracking-widest pointer-events-none select-none mix-blend-difference transition-opacity duration-500 [@media(max-height:700px)]:hidden ${inHero ? 'opacity-60' : 'opacity-0'}`}>
       
       {/* HEADER */}
       <div className="flex items-center gap-2 text-gray-500 mb-1">

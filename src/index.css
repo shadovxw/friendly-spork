@@ -568,3 +568,45 @@ html {
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
 }
+
+/* Fixed UI is pinned: it keeps its own layer and is not animated with the page, so only the content changes.
+   Only the new snapshot is shown (old hidden) so semi-transparent elements don't double up. */
+::view-transition-group(site-nav),
+::view-transition-group(sys-monitor),
+::view-transition-group(cmdk-hint),
+::view-transition-group(scroll-ring),
+::view-transition-group(glow-cursor) { animation: none; }
+::view-transition-old(site-nav),
+::view-transition-old(sys-monitor),
+::view-transition-old(cmdk-hint),
+::view-transition-old(scroll-ring),
+::view-transition-old(glow-cursor) { display: none; }
+::view-transition-new(site-nav),
+::view-transition-new(sys-monitor),
+::view-transition-new(cmdk-hint),
+::view-transition-new(scroll-ring),
+::view-transition-new(glow-cursor) { animation: none; }
+
+/* Going back (Return to Base / Back): the old page collapses to a line like a CRT switching off,
+   the landing page slides in. Forward keeps the glitch-out / scan-open above. */
+html[data-nav="back"]::view-transition-old(root) { animation: vtOutBack 260ms ease-in both; }
+html[data-nav="back"]::view-transition-new(root) { animation: vtInBack 380ms 140ms cubic-bezier(.16, 1, .3, 1) both; }
+@keyframes vtOutBack {
+  0%   { transform: none; filter: none; }
+  55%  { opacity: 1; transform: scale(1, .006); filter: brightness(3); }
+  100% { opacity: 0; transform: scale(.02, .006); filter: brightness(4); }
+}
+@keyframes vtInBack {
+  0%   { opacity: 0; transform: translateX(-24px); filter: brightness(2) hue-rotate(-30deg); }
+  100% { opacity: 1; transform: none; filter: none; }
+}
+
+/* The Full Archive card grows into the construction panel (and back). One element per page holds the name. */
+.archive-card, .construction-panel { view-transition-name: archive-panel; }
+::view-transition-group(archive-panel) { animation-duration: 450ms; animation-timing-function: cubic-bezier(.16, 1, .3, 1); }
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-nav="back"]::view-transition-old(root),
+  html[data-nav="back"]::view-transition-new(root),
+  ::view-transition-group(archive-panel) { animation: none; }
+}
