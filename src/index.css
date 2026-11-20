@@ -218,22 +218,59 @@ html {
 /* --- FILM GRAIN ANIMATION (Consolidated below) --- */
 
 /* --- CUSTOM SCROLLBAR --- */
+/* Themed native scrollbar (used on pages without the story rail, and on touch devices) */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #22d3ee #0b0a0d;
+}
+
 ::-webkit-scrollbar {
   width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0a0a0a;
+  background: #0b0a0d;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #333;
+  background: linear-gradient(to bottom, #22d3ee, #d946ef);
   border-radius: 4px;
+  border: 2px solid #0b0a0d;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: #22d3ee;
-  /* Cyan on hover */
+}
+
+/* On the landing page the story rail IS the scrollbar (desktop only) */
+@media (min-width: 768px) {
+  html.rail-active { scrollbar-width: none; }
+  html.rail-active::-webkit-scrollbar { display: none; }
+}
+
+/* --- STORY RAIL / STAGE BRIDGES --- */
+.story-pulse { animation: storyPulse 1.6s ease-in-out infinite; }
+@keyframes storyPulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.25; }
+}
+.story-bob { animation: storyBob 1.6s ease-in-out infinite; }
+@keyframes storyBob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(4px); }
+}
+.story-caret { animation: storyCaret 1s steps(1) infinite; }
+@keyframes storyCaret {
+  50% { opacity: 0; }
+}
+.scroll-cue-wheel { animation: scrollWheel 1.6s ease-in-out infinite; }
+@keyframes scrollWheel {
+  0%   { transform: translateY(0); opacity: 0; }
+  30%  { opacity: 1; }
+  100% { transform: translateY(10px); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .story-pulse, .story-bob, .story-caret, .scroll-cue-wheel { animation: none; }
 }
 
 /* Consolidated bg-noise below */

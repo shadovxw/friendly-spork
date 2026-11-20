@@ -12,6 +12,8 @@ import VelocityWrapper from '../components/layout/VelocityWrapper';
 import VelocityMarquee from '../components/effects/VelocityMarquee';
 import FlickeringHeadline from '../components/effects/FlickeringHeadline';
 import StackPage from '../components/sections/StackPage';
+import StoryRail from '../components/story/StoryRail';
+import StageBridge from '../components/story/StageBridge';
 
 const LandingPage = () => {
   const { enableIntro } = useOutletContext();
@@ -161,6 +163,7 @@ const LandingPage = () => {
       <div className="bg-noise"></div>
 
       <TopNav show={showLandingContent} />
+      <StoryRail show={showLandingContent} />
 
       {/* 1. HERO SECTION */}
       <section
@@ -222,11 +225,13 @@ const LandingPage = () => {
         {/* Fade into the marquee below so the hero doesn't end on a hard edge */}
         <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-[180px] bg-gradient-to-b from-transparent to-[#0b0a0d]" />
 
-        {/* Scroll cue (far right edge, clear of the portrait's face) */}
-        <div className="pointer-events-none absolute right-6 top-[72%] z-20 hidden flex-col items-center gap-2 md:flex">
-          <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/40">scroll</span>
-          <span className="relative h-12 w-px bg-white/15">
-            <span className="scroll-cue-dot absolute left-1/2 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-cyan-400" />
+        {/* Scroll cue: tells a first-time visitor the page continues, and how (the rail on the right shows the stages) */}
+        <div className={`pointer-events-none absolute bottom-8 left-1/2 z-20 hidden -translate-x-1/2 flex-col items-center gap-3 md:flex transition-opacity duration-1000 delay-[1400ms] ${showLandingContent ? 'opacity-100' : 'opacity-0'}`}>
+          <span className="relative flex h-9 w-[22px] justify-center rounded-full border border-white/25">
+            <span className="scroll-cue-wheel mt-2 h-2 w-[2px] rounded-full bg-cyan-400" />
+          </span>
+          <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/45">
+            scroll to boot the rest <span className="text-white/25">· 5 stages</span>
           </span>
         </div>
 
@@ -301,6 +306,7 @@ const LandingPage = () => {
       {/* --- MARQUEE --- */}
       <div className={`transition-opacity duration-1000 delay-1000 ${showLandingContent ? 'opacity-100' : 'opacity-0'}`}>
         <VelocityMarquee />
+        <StageBridge from={0} note="handshake ok" />
       </div>
 
       {/* 2. VELOCITY ZONE */}
@@ -308,14 +314,17 @@ const LandingPage = () => {
         <div id="projects">
           <ProjectSection />
         </div>
+        <StageBridge from={1} note="artifacts built" />
 
         <div id="stack">
           <StackPage />
         </div>
+        <StageBridge from={2} note="dependencies resolved" />
 
         <div id="experience">
           <ExperienceSection />
         </div>
+        <StageBridge from={3} note="history loaded" />
       </VelocityWrapper>
 
       {/* 3. STATIC ZONE */}
