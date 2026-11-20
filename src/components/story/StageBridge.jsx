@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { STAGES, LAST_STAGE, pad, scrollToStage } from './stages';
+import { sfx } from '../../utils/sfx';
 
 // The connective tissue between two sections: closes the stage you just read
 // ("✓ projects — artifacts built") and tells you what's coming next, so every
@@ -50,7 +51,7 @@ const StageBridge = ({ from, note }) => {
         {/* what's next (clickable) */}
         <button
           type="button"
-          onClick={() => scrollToStage(from + 1)}
+          onClick={() => { sfx.play('click'); scrollToStage(from + 1); }}
           className={`group text-[11px] md:text-xs tracking-[0.25em] text-white transition-all duration-700 delay-500 hover:text-cyan-300 ${seen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}
         >
           <span className="text-white/35">stage {pad(from + 1)}/{pad(LAST_STAGE)}</span>

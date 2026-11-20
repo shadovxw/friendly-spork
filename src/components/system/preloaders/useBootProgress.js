@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import heroImage from '../../../assets/hero.jpg';
+import heroImage from '../../../assets/hero.webp'; // same file the hero uses, so the preload is reused
 
 // Real work the intro waits on, so the progress is honest instead of faked.
 const TASKS = [

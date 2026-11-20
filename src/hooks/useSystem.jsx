@@ -1,17 +1,18 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import useSound from 'use-sound';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { sfx } from '../utils/sfx';
 
 const SystemContext = createContext();
 
-const hoverSfx = '/sounds/hover.mp3'; 
-const clickSfx = '/sounds/click.mp3';
 
 export const SystemProvider = ({ children }) => {
   const [matrixMode, setMatrixMode] = useState(false);
   
-  // Audio Setup
-  const [playHover] = useSound(hoverSfx, { volume: 0.2, interrupt: true });
-  const [playClick] = useSound(clickSfx, { volume: 0.5 });
+  // Audio: see utils/sfx.js (loads after the first click/key, respects the mute toggle)
+  const [muted, setMuted] = useState(sfx.muted);
+  useEffect(() => sfx.subscribe(setMuted), []);
+  const playHover = useCallback(() => sfx.play('hover'), []);
+  const playClick = useCallback(() => sfx.play('click'), []);
+  const toggleSound = useCallback(() => sfx.toggle(), []);
 
   useEffect(() => {
     let buffer = "";
@@ -35,7 +36,7 @@ export const SystemProvider = ({ children }) => {
   }, []);
 
   return (
-    <SystemContext.Provider value={{ matrixMode, setMatrixMode, playHover, playClick }}>
+    <SystemContext.Provider value={{ matrixMode, setMatrixMode, playHover, playClick, muted, toggleSound }}>
       {children}
     </SystemContext.Provider>
   );

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import StageTag from '../story/StageTag';
 import { Link, useNavigate } from 'react-router-dom';
 import { withViewTransition } from '../../utils/viewTransition';
 import HoloCard from '../ui/HoloCard';
@@ -102,7 +103,8 @@ const ProjectSection = () => {
 
       {/* Section Header */}
       <BlurReveal className="mb-20" blur={4} y={16} duration={0.7}>
-        <div className="flex items-center gap-4 mb-4">
+        <div className="flex flex-wrap items-center gap-4 mb-4">
+          <StageTag index={1} />
           <h2 className="text-sm font-bold tracking-[0.5em] text-cyan-400 uppercase">Archives</h2>
           <div className="h-[1px] w-12 bg-cyan-900" />
           <span className="text-[10px] font-mono text-cyan-500/50">

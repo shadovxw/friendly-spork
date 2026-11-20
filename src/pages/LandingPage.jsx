@@ -6,7 +6,7 @@ import ExperienceSection from '../components/sections/ExperienceSection';
 import AboutSection from '../components/sections/AboutSection';
 import Footer from '../components/layout/Footer';
 import HyperText from '../components/effects/HyperText';
-import heroImage from '../assets/hero.jpg';
+import heroImage from '../assets/hero.webp'; // 105 KB vs 240 KB for the old hero.jpg
 import resumeFile from '../assets/resume.pdf';
 import VelocityWrapper from '../components/layout/VelocityWrapper';
 import VelocityMarquee from '../components/effects/VelocityMarquee';
@@ -14,6 +14,7 @@ import FlickeringHeadline from '../components/effects/FlickeringHeadline';
 import StackPage from '../components/sections/StackPage';
 import StoryRail from '../components/story/StoryRail';
 import StageBridge from '../components/story/StageBridge';
+import { sfx } from '../utils/sfx';
 
 const LandingPage = () => {
   const { enableIntro } = useOutletContext();
@@ -119,6 +120,7 @@ const LandingPage = () => {
       if (inside && !inFace && Date.now() - lastFaceGlitch.current > 2500) {
         lastFaceGlitch.current = Date.now();
         triggerGlitch();
+        sfx.play('glitch'); // only the cursor-triggered glitch makes noise, never the idle one
       }
       inFace = inside;
     };
@@ -190,6 +192,8 @@ const LandingPage = () => {
             <img
               src={heroImage}
               alt="Background"
+              fetchPriority="high"
+              decoding="async"
               className="w-full h-full object-cover object-center filter grayscale contrast-125 brightness-75" // Increased darkness slightly
             />
             {/* Spotlight: the same painting, brighter, revealed only under the cursor */}

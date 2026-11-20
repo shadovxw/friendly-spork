@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { STAGES, LAST_STAGE, pad, scrollToStage } from './stages';
+import { sfx } from '../../utils/sfx';
+import { useSystem } from '../../hooks/useSystem';
 
 // Themed scrollbar: a vertical "build pipeline" pinned to the right edge.
 // Each section is a stage node placed where that section really starts in the page,
@@ -15,6 +17,32 @@ const StoryRail = ({ show = true }) => {
   const trackRef = useRef(null);
   const topsRef = useRef(tops);
   const maxRef = useRef(1);
+  const { muted, toggleSound } = useSystem();
+
+  // Swarm intro (SwarmRebuild.jsx) -> rail header: "building 42%" while agents build the page,
+  // then a short "build ok ✓" flash, after which the pipeline is "live".
+  const [build, setBuild] = useState(() => window.__swarmStatus || { status: 'idle', done: 0, total: 0 });
+  const [buildFlash, setBuildFlash] = useState(false);
+  useEffect(() => {
+    let wasBuilding = window.__swarmStatus?.status === 'running';
+    let flashTimer = 0;
+    const onStatus = (e) => {
+      const { status } = e.detail;
+      setBuild(e.detail);
+      if (status === 'running') { wasBuilding = true; return; }
+      if (wasBuilding && (status === 'complete' || status === 'live')) {
+        wasBuilding = false;
+        setBuildFlash(true);
+        sfx.play('complete');
+        clearTimeout(flashTimer);
+        flashTimer = setTimeout(() => setBuildFlash(false), 2600);
+      }
+    };
+    window.addEventListener('swarm-status', onStatus);
+    return () => { window.removeEventListener('swarm-status', onStatus); clearTimeout(flashTimer); };
+  }, []);
+  const building = build.status === 'running';
+  const buildPct = build.total ? Math.round((build.done / build.total) * 100) : 0;
 
   // The rail takes over from the native scrollbar while it's mounted.
   useEffect(() => {
@@ -34,6 +62,15 @@ const StoryRail = ({ show = true }) => {
     if (y >= max - 4) idx = LAST_STAGE;
     setActive(idx);
   }, []);
+
+  // A soft pluck each time a new stage lights up (silent until the visitor has clicked once; see sfx.js)
+  const lastActive = useRef(0);
+  useEffect(() => {
+    if (active !== lastActive.current) {
+      lastActive.current = active;
+      sfx.play('stage');
+    }
+  }, [active]);
 
   // Measure where each section starts. Sections resize (pinned About scroller, lazy
   // images, fonts), so re-measure whenever the document's size changes.
@@ -103,12 +140,20 @@ const StoryRail = ({ show = true }) => {
     <>
       {/* ---------- Desktop: vertical pipeline rail ---------- */}
       <nav
+        data-swarm-skip=""
         aria-label="Page sections"
         className={`story-rail group/rail fixed right-3 lg:right-5 top-1/2 z-[60] hidden h-[62vh] -translate-y-1/2 md:flex flex-col items-end transition-opacity duration-1000 ${show ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
       >
         {/* header */}
-        <div className="mb-3 mr-[3px] font-mono text-[9px] uppercase tracking-[0.3em] text-white/30 select-none">
-          pipeline
+        <div
+          aria-live="polite"
+          className={`mb-3 mr-[3px] font-mono text-[9px] uppercase tracking-[0.3em] select-none transition-colors duration-500 ${
+            buildFlash ? 'text-cyan-300' : building ? 'text-white/60' : 'text-white/30'
+          }`}
+        >
+          {buildFlash ? 'build ok ✓' : building ? (
+            <><span className="story-pulse inline-block text-cyan-400">●</span> building {buildPct}%</>
+          ) : 'pipeline'}
         </div>
 
         <div className="relative flex-1 w-6">
@@ -162,6 +207,9 @@ const StoryRail = ({ show = true }) => {
                   <span className="text-white/35">{s.cmd}</span>{' '}
                   {s.label}
                 </span>
+                {i === 0 && buildFlash && (
+                  <span className="story-ping pointer-events-none absolute right-[3px] h-[17px] w-[17px] rounded-full border border-cyan-300" />
+                )}
                 <span
                   className={`relative mr-[7px] h-[9px] w-[9px] rotate-45 border transition-all duration-300 ${
                     isActive
@@ -187,6 +235,16 @@ const StoryRail = ({ show = true }) => {
         <div className="mt-3 mr-[3px] text-right font-mono text-[9px] uppercase tracking-[0.25em] text-white/35 select-none">
           <span className="text-cyan-400">{pad(active)}</span>/{pad(LAST_STAGE)}
           <span className="block text-white/25">{active === LAST_STAGE ? 'shipped ✓' : current.cmd}</span>
+          <button
+            type="button"
+            onClick={toggleSound}
+            aria-pressed={!muted}
+            aria-label={muted ? 'Turn sound on' : 'Turn sound off'}
+            className="mt-2 inline-flex items-center gap-1 tracking-[0.25em] text-white/30 transition-colors hover:text-cyan-300"
+          >
+            <span className={muted ? 'line-through' : ''}>sfx</span>
+            <span className={muted ? 'text-white/20' : 'text-cyan-400'}>{muted ? 'off' : 'on'}</span>
+          </button>
         </div>
       </nav>
 
@@ -194,6 +252,7 @@ const StoryRail = ({ show = true }) => {
           Sits above the nav (z-200) and therefore above the site's hue-rotate overlay (z-100),
           so it uses the already-shifted colours (violet/rose) instead of cyan/fuchsia. */}
       <div
+        data-swarm-skip=""
         aria-hidden="true"
         className={`fixed inset-x-0 top-0 z-[220] h-[3px] bg-white/5 md:hidden transition-opacity duration-1000 ${show ? 'opacity-100' : 'opacity-0'}`}
       >

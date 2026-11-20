@@ -587,6 +587,14 @@ const SwarmRebuild = () => {
 
   const [ui, setUi] = useState('full'); // full | skip | none
 
+  // Broadcast progress so the story rail can show "building 42%" and then "build ok".
+  // (also kept on window for anything that mounts mid-run)
+  useEffect(() => {
+    const detail = { status, done: stats.done, total: stats.total };
+    window.__swarmStatus = detail;
+    window.dispatchEvent(new CustomEvent('swarm-status', { detail }));
+  }, [status, stats.done, stats.total]);
+
   const startFast = useCallback(() => {
     if (engine.current || !supported()) return;
     opts.current = { tour: false, speed: 4, fast: true, ui: 'none', startAgents: 20, scope: 'viewport', maxDuration: 2200 };

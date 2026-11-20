@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import StageTag from '../story/StageTag';
 import { motion, useInView, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { Box } from 'lucide-react';
 import BlurReveal from '../effects/BlurReveal';
@@ -196,7 +197,8 @@ const StackPage = () => {
     >
       {/* Header Section (same shape as Projects) */}
       <BlurReveal className="mb-16" blur={4} y={16} duration={0.7}>
-        <div className="flex items-center gap-4 mb-4">
+        <div className="flex flex-wrap items-center gap-4 mb-4">
+          <StageTag index={2} />
           <h2 className="text-sm font-bold tracking-[0.5em] text-cyan-400 uppercase">Toolchain</h2>
           <div className="h-[1px] w-12 bg-cyan-900" />
           <span className="text-[10px] font-mono text-cyan-500/50">
