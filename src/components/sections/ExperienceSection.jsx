@@ -1,4 +1,5 @@
 import React, { Component, Suspense, lazy, useEffect, useRef, useState } from 'react';
+import StageTag from '../story/StageTag';
 import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
 import BlurReveal from '../effects/BlurReveal';
 import HoloCard from '../ui/HoloCard';
@@ -220,6 +221,7 @@ const ExperienceSection = () => {
       {/* Title */}
       <div className="relative z-10 mb-24 text-center">
         <BlurReveal>
+          <StageTag index={3} className="mb-4" />
           <h2 className="text-sm font-bold tracking-[0.5em] text-gray-500 uppercase mb-4">The Journey</h2>
         </BlurReveal>
         <BlurReveal delay={0.2}>

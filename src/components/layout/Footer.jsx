@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, Suspense, lazy } from 'react';
+import StageTag from '../story/StageTag';
 import { motion } from 'framer-motion';
 import { Github, Linkedin, Mail, Check } from 'lucide-react';
 import ConstellationCanvas from '../effects/ConstellationCanvas';
@@ -137,6 +138,7 @@ const Footer = () => {
 
       {/* 2. MAIN CALL TO ACTION (CENTERED) */}
       <div className="relative z-10 flex-grow flex flex-col justify-center items-center text-center px-4">
+        <StageTag index={5} className="mb-4" />
         <p className="text-cyan-500 font-mono text-[10px] tracking-[0.5em] uppercase mb-6 animate-pulse">
           Transmission End // Initialize Connection
         </p>
