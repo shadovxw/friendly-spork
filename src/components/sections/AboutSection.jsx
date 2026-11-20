@@ -1,4 +1,5 @@
 import BlurReveal from '../effects/BlurReveal';
+import StageTag from '../story/StageTag';
 import TextReveal from '../effects/TextReveal';
 import React, { useRef, useEffect, useState, lazy, Suspense } from 'react';
 import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
@@ -71,6 +72,7 @@ const ProfileHeaderSection = () => {
                 style={{ scaleY: reduce ? 1 : borderDraw }}
               />
               <BlurReveal>
+                <StageTag index={4} className="mb-2 md:mb-3" />
                 <h2 className="text-[10px] md:text-sm font-bold tracking-[0.5em] text-cyan-400 uppercase mb-1 md:mb-2">
                   {PERSONNEL_LABEL}
                 </h2>

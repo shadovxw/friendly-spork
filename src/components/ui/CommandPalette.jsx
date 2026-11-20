@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, FolderGit2, Layers, Briefcase, User, Mail, FileText, Github, Linkedin, Copy, Archive, Send, Check, Sparkles } from 'lucide-react';
+import { Home, FolderGit2, Layers, Briefcase, User, Mail, FileText, Github, Linkedin, Copy, Archive, Send, Check, Sparkles, Volume2, VolumeX } from 'lucide-react';
+import { sfx } from '../../utils/sfx';
 import resumeFile from '../../assets/resume.pdf';
 import { withViewTransition } from '../../utils/viewTransition';
 import { modKeyLabel } from '../../utils/platform';
@@ -10,6 +11,8 @@ const EMAIL = 'vrishank.w02@gmail.com';
 // Palette and nav sit above the site's colour overlay, so they show true colours: purple here, not cyan.
 const CommandPalette = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [, setSoundTick] = useState(0); // re-label the Sound command when it's toggled
+  useEffect(() => sfx.subscribe(() => setSoundTick((t) => t + 1)), []);
   const [query, setQuery] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [copied, setCopied] = useState(false);
@@ -91,6 +94,12 @@ const CommandPalette = () => {
     { id: 'github', label: 'GitHub', hint: 'opens in a new tab', Icon: Github, keywords: 'code repos git source', action: () => window.open('https://github.com/shadovxw', '_blank', 'noopener') },
     { id: 'linkedin', label: 'LinkedIn', hint: 'opens in a new tab', Icon: Linkedin, keywords: 'connect network social', action: () => window.open('https://www.linkedin.com/in/vrishank-warrier-ab529628a/', '_blank', 'noopener') },
   ];
+
+  commands.push({
+    id: 'sound', label: sfx.muted ? 'Sound on' : 'Sound off', hint: sfx.muted ? 'turn UI sounds on' : 'mute UI sounds',
+    Icon: sfx.muted ? Volume2 : VolumeX, keywords: 'audio mute unmute sfx volume noise', keepOpen: true,
+    action: () => sfx.toggle(),
+  });
 
   // the swarm rebuild needs the landing page on a desktop-sized screen without reduced motion
   if (location.pathname === '/' && window.innerWidth >= 768 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {

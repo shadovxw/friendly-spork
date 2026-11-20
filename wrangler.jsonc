@@ -2,6 +2,8 @@
   "name": "portfolio",
   "compatibility_date": "2026-02-15",
   "assets": {
-    "directory": "./dist"
+    "directory": "./dist",
+    // React Router handles /projects etc.: unknown paths get index.html instead of a 404
+    "not_found_handling": "single-page-application"
   }
 }
